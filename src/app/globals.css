@@ -1,0 +1,526 @@
+@import "tailwindcss";
+
+/* Tablet/laptop kecil mendatar (768–1023px, cukup tinggi): Menu memakai 2 kolom (teks kiri, cup kanan) */
+@custom-variant tab-land (@media (min-width: 768px) and (max-width: 1023px) and (orientation: landscape) and (min-height: 600px));
+
+/*
+ * Palet "Deep Navy × Biru Muda × Ivory × Warm Brown".
+ * Navy = identitas brand, cream = jeda visual, biru muda = aksen, coffee = elemen kopi.
+ */
+:root {
+  --navy-deep: #071331;
+  --navy: #0b1d4d;
+  --navy-soft: #132d63;
+  --cream: #f3f5f9; /* putih kebiruan tipis: satu keluarga dengan logo biru-putih */
+  --white-warm: #ffffff;
+  --accent: #8fb2f5; /* biru muda: satu keluarga dengan logo biru-putih */
+  --accent-deep: #2f5fc4; /* biru aksen untuk TEKS di latar terang (biru muda terlalu pucat di atas putih/cream) */
+  --coffee: #6f4a2d;
+  --coffee-dark: #3e2a20;
+  --text-muted: #b8c0d2;
+}
+
+/* Design tokens — sumber: design.md bagian 2 & 12.2 */
+@theme {
+  --color-ink: var(--navy-deep); /* latar utama (paling gelap) */
+  --color-deep: var(--navy); /* latar kedua */
+  --color-navy-soft: var(--navy-soft); /* navy yang sedikit lebih terang */
+  --color-cream: var(--cream); /* latar terang: jeda visual */
+  --color-warm: var(--white-warm); /* kartu di latar cream, teks utama di latar gelap */
+  --color-accent: var(--accent); /* aksen: tombol hover, garis aktif, harga */
+  --color-accent-deep: var(--accent-deep);
+  --color-coffee: var(--coffee); /* aksen coklat untuk teks di latar terang */
+  --color-coffee-dark: var(--coffee-dark);
+  --color-mist: var(--text-muted); /* teks sekunder di latar gelap */
+  --color-brewi-navy: #041f62; /* warna logo (jangan diubah) */
+
+  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-brand: var(--font-unbounded), var(--font-jakarta), sans-serif;
+
+  --text-hero: clamp(44px, 6.5vw, 88px);
+  --text-hero--line-height: 1.02;
+  --text-menu: clamp(40px, 5.4vw, 72px);
+  --text-menu--line-height: 1.02;
+  --text-section: clamp(34px, 4.2vw, 56px);
+  --text-section--line-height: 1.08;
+  --text-subtitle: clamp(18px, 1.6vw, 22px);
+  --text-body: clamp(16px, 1.2vw, 17px);
+  --text-small: clamp(12px, 0.9vw, 13px);
+  --text-price: clamp(26px, 2.4vw, 32px);
+
+  /* Sistem bentuk (4 tingkat, dari besar ke kecil):
+     section 32px → sudut panel yang saling menimpa
+     card 18px    → permukaan utama: kartu, peta, foto besar
+     photo 16px   → foto berdiri sendiri: galeri, lightbox
+     inner 12px   → elemen di DALAM kartu (foto dalam kartu, baris jam aktif, alas cup);
+                    = radius kartu − jarak tepinya, supaya sudut dalam & luar sejajar
+     pill         → semua yang bisa diklik: tombol, chip, tab, menu navbar */
+  --radius-pill: 999px;
+  --radius-section: 32px;
+  --radius-card: 18px;
+  --radius-photo: 16px;
+  --radius-inner: 12px;
+
+  --shadow-lift: 0 -18px 50px -30px rgba(7, 19, 49, 0.45);
+  /* Kartu di latar cream: bayangan coklat tipis, bukan hitam pekat */
+  --shadow-soft: 0 1px 2px rgba(7, 19, 49, 0.05), 0 14px 34px -18px rgba(7, 19, 49, 0.18);
+  --shadow-raised: 0 2px 4px rgba(7, 19, 49, 0.05), 0 24px 48px -20px rgba(7, 19, 49, 0.26);
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-inout-soft: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --breakpoint-xl: 1440px;
+}
+
+:root {
+  --dur-fast: 180ms;
+  --dur-base: 400ms;
+  --dur-slow: 800ms;
+  --container-pad: clamp(20px, 5vw, 72px);
+  --nav-h: 72px;
+}
+
+html {
+  scroll-behavior: auto;
+}
+
+body {
+  background: var(--color-ink);
+  color: var(--color-warm);
+  font-family: var(--font-sans);
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+.lenis [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+@utility container-brewi {
+  width: 100%;
+  /* Lebar konten 1200px; padding di luar lebar itu */
+  max-width: calc(1200px + var(--container-pad) * 2);
+  margin-inline: auto;
+  padding-inline: var(--container-pad);
+}
+
+@utility h-screen-s {
+  height: 100svh;
+}
+
+@utility min-h-screen-s {
+  min-height: 100svh;
+}
+
+/*
+ * Geometri Menu Kopi: satu sumber ukuran untuk lingkaran biru (--bx, --by, --br),
+ * cup utama (--cap-*) dan thumbnail (--tw, --th). Thumbnail diletakkan tepat di tepi lingkaran.
+ */
+.menu-stage {
+  /* HP & tablet potret: teks menu di kiri, cup + busur lingkaran di kanan (komposisi desktop yang diperkecil).
+     Baris atas: eyebrow + tab kategori (tinggi tetap --head-h). Di bawahnya baris isi mulai di --row-top:
+     kolom teks selebar --text-w di kiri, panggung cup di kanan. --u = "1svh desktop" versi HP,
+     dibatasi lebar layar supaya busur + thumbnail hanya memakai ±50% lebar layar. */
+  --u: min(0.64vw, 0.32svh);
+  --text-top: calc(var(--nav-h) + 0.5rem);
+  --head-h: 5.5rem;
+  --row-top: calc(var(--text-top) + var(--head-h) + 0.75rem);
+  /* Titik acuan panggung: puncak cup & thumbnail atas ±14u di bawah --o → sejajar dengan awal kolom teks */
+  --o: calc(var(--row-top) - var(--u) * 14);
+  --cap-h: calc(var(--u) * 64);
+  --cap-w: calc(var(--cap-h) * 31 / 54);
+  --shift: 0px;
+  --cap-x: calc(100vw - var(--u) * 47 - var(--cap-w) / 2 - var(--shift));
+  --cap-y: calc(var(--o) + var(--u) * 44 - var(--cap-h) * 0.46);
+  --br: calc(var(--u) * 82.5);
+  --bx: calc(100vw + var(--u) * 8 - var(--shift));
+  --by: calc(var(--o) + var(--u) * 104.5);
+  /* Thumbnail sedikit lebih besar dari proporsi desktop (7.5u) supaya mudah diketuk, rasio tetap 1 : 1.5 */
+  --tw: calc(var(--u) * 11);
+  --th: calc(var(--tw) * 1.5);
+  /* Di desktop lingkaran terpotong tepi bawah layar; di HP dipudarkan di batas bawah panggung */
+  --stage-end: calc(var(--o) + var(--u) * 98);
+  --blob-mask: linear-gradient(
+    to bottom,
+    #000 calc(var(--stage-end) - var(--by) + var(--br) - var(--u) * 22),
+    transparent calc(var(--stage-end) - var(--by) + var(--br))
+  );
+  /* Kolom teks berhenti sebelum thumbnail paling kiri (±79u dari tepi kanan) */
+  --text-w: calc(100vw - var(--u) * 80 - var(--container-pad) - 0.5rem);
+  /* Tinggi minimum kolom teks = tinggi panggung, jadi harga & tombol selalu di bawah cup */
+  --text-min-h: calc(var(--stage-end) - var(--row-top));
+}
+/* Tablet landscape & desktop memakai geometri desktop yang sama */
+@media (min-width: 1024px), (min-width: 768px) and (orientation: landscape) and (min-height: 600px) {
+  .menu-stage {
+    --blob-mask: none;
+    /* Lingkaran & cup dikunci ke tepi kanan layar (100vw) dan diukur dengan svh,
+       jadi busur yang terlihat sama di semua rasio layar (16:10 sampai 21:9). */
+    --cap-h: min(70svh, 640px);
+    /* Geser cup & lingkaran sedikit ke tengah. Maks 8svh: titik puncak lingkaran (--bx) harus tetap di tepi kanan
+       layar atau di luarnya, kalau masuk ke layar lingkaran terlihat menggembung (bukan busur yang menyapu).
+       Layar sempit → 0 supaya busur tidak menimpa kolom teks. */
+    --shift: clamp(0px, 52vw - 77svh - 2rem, 8svh);
+    --cap-x: calc(100vw - 47svh - var(--cap-w) / 2 - var(--shift));
+    --cap-y: calc(44svh - var(--cap-h) * 0.46);
+    --br: 82.5svh;
+    --bx: calc(100vw + 8svh - var(--shift));
+    --by: calc(22svh + 82.5svh);
+    --tw: 7.5svh;
+    --th: 11.25svh;
+    --text-w: none;
+    --text-min-h: 0px;
+  }
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Foto kopi & suasana: sedikit hangat dan natural, tidak oranye */
+@utility photo-warm {
+  filter: brightness(0.99) contrast(1.04) saturate(1.05) sepia(0.06);
+}
+
+/*
+ * Foto bernada latar (semua foto kecuali menu): warna foto diganti nada section-nya
+ * (dark = navy, soft = navy tipis, light = navy sedang untuk latar terang). Warna asli muncul saat disorot mouse,
+ * difokus keyboard, atau diketuk/diklik (atribut data-color-on, lihat PhotoTintToggle).
+ * Pasang data-tint="dark" | "soft" | "light" di pembungkus foto (harus relative + ukuran tetap).
+ */
+[data-tint] {
+  isolation: isolate;
+}
+[data-tint]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: var(--color-navy-soft);
+  mix-blend-mode: color;
+  transition: opacity 0.6s var(--ease-out-soft);
+}
+/* light = latar putih kebiruan: nada navy tipis (bukan coklat) supaya foto serasi dengan latar */
+[data-tint="light"]::after {
+  opacity: 0.55;
+}
+/* dim = tanpa nada biru: warna dipudarkan & digelapkan tipis, seperti hitam pudar (Tentang) */
+[data-tint="dim"]::after {
+  background: rgb(10 10 10 / 0.38);
+  mix-blend-mode: normal;
+  backdrop-filter: saturate(0.45) contrast(0.95);
+}
+/* soft = warna asli tetap terlihat, hanya sentuhan biru tipis (Galeri) */
+[data-tint="soft"]::after {
+  opacity: 0.28;
+}
+[data-tint]:focus-within::after,
+[data-tint][data-color-on]::after {
+  opacity: 0;
+}
+@media (hover: hover) {
+  [data-tint]:hover::after,
+  .group:hover [data-tint]::after {
+    opacity: 0;
+  }
+}
+
+/* Label kecil di atas judul section (eyebrow editorial) */
+@utility eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+  font-size: var(--text-small);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  @media (min-width: 1024px) {
+    letter-spacing: 0.28em;
+  }
+}
+
+/* Kilap cahaya logo intro */
+.shine {
+  position: relative;
+  overflow: hidden;
+  /* Cahaya di sekeliling logo ikut berdenyut saat kilau melintas */
+  animation: shine-glow 3.6s var(--ease-inout-soft) 1.4s infinite;
+}
+.shine::after {
+  content: "";
+  position: absolute;
+  inset: -20% auto -20% 0;
+  width: 38%;
+  /* Inti kilau terang (putih + sedikit biru aksen) supaya terlihat jelas, juga di atas lingkaran putih */
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(255, 236, 200, 0.35) 35%,
+    rgba(255, 255, 255, 0.95) 50%,
+    rgba(255, 236, 200, 0.35) 65%,
+    transparent 100%
+  );
+  mix-blend-mode: screen;
+  transform: translateX(-150%) skewX(-18deg);
+  /* Kilau melintas ±1,3 detik, lalu jeda ±2,3 detik sebelum berulang */
+  animation: shine-sweep 3.6s var(--ease-inout-soft) 1.4s infinite;
+  pointer-events: none;
+}
+@keyframes shine-sweep {
+  0% { transform: translateX(-150%) skewX(-18deg); }
+  36%, 100% { transform: translateX(400%) skewX(-18deg); }
+}
+/* Bayangan bawaan logo (0 30px 80px hitam + pendar biru aksen) → pendar hangat lebih terang di tengah lintasan kilau */
+@keyframes shine-glow {
+  0%, 40%, 100% {
+    box-shadow: 0 30px 80px -20px rgb(0 0 0 / 0.6), 0 0 70px rgb(143 178 245 / 0.14);
+  }
+  18% {
+    box-shadow: 0 30px 80px -20px rgb(0 0 0 / 0.6), 0 0 110px 10px rgb(255 226 170 / 0.4);
+  }
+}
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+.animate-bob {
+  animation: bob 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shine,
+  .shine::after,
+  .animate-bob {
+    animation: none;
+  }
+}
+
+/*
+ * Navigasi jelly (JellyNav): chip aktif membesar, chip lain terdorong ke samping dengan pegas.
+ * Transform chip diatur motion; di sini hanya warna, ukuran, dan state.
+ *
+ * Di @layer components supaya utility Tailwind (mis. `hidden lg:flex` di Navbar) tetap bisa menimpanya.
+ */
+@layer components {
+  .jelly-nav {
+    /* Nilai awal ≈ hasil ukur JellyNav (chip terlebar ±100px) → tidak ada pergeseran saat diukur */
+    --jn-pad-x: 14px;
+    --jn-pad-y: 5px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: var(--jn-pad-y) var(--jn-pad-x);
+    user-select: none;
+  }
+  .jelly-nav[data-tone="dark"] {
+    --jn-active-bg: var(--color-accent);
+    --jn-active-text: var(--color-ink);
+    --jn-hover: rgb(243 245 249 / 0.1);
+    --jn-rim: rgb(255 253 248 / 0.35);
+  }
+  .jelly-nav[data-tone="light"] {
+    --jn-active-bg: var(--color-ink);
+    --jn-active-text: var(--color-warm);
+    --jn-hover: rgb(7 19 49 / 0.07);
+    --jn-rim: rgb(143 178 245 / 0.45);
+  }
+  .jelly-nav__chip {
+    display: inline-flex;
+    border-radius: var(--radius-pill);
+    transform-origin: 50% 50%;
+    outline: none;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .jelly-nav__chip:focus-visible {
+    outline: none;
+  }
+  .jelly-nav__chip:focus-visible .jelly-nav__skin {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+  .jelly-nav__skin {
+    display: inline-flex;
+    align-items: center;
+    height: 36px;
+    padding: 0 15px;
+    border-radius: var(--radius-pill);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    opacity: 0.8;
+    transition:
+      background-color 300ms ease,
+      color 300ms ease,
+      opacity 300ms ease,
+      box-shadow 300ms ease,
+      transform 160ms var(--ease-out-soft);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .jelly-nav__chip[data-on="false"]:hover .jelly-nav__skin {
+      background: var(--jn-hover);
+      opacity: 1;
+    }
+  }
+  .jelly-nav__chip[data-on="true"] .jelly-nav__skin {
+    background: var(--jn-active-bg);
+    color: var(--jn-active-text);
+    font-weight: 600;
+    opacity: 1;
+    box-shadow:
+      inset 0 1px 0 var(--jn-rim),
+      0 8px 20px -10px rgb(7 19 49 / 0.55);
+  }
+  .jelly-nav__chip:active .jelly-nav__skin {
+    transform: scale(0.97);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .jelly-nav__chip:active .jelly-nav__skin {
+      transform: none;
+    }
+  }
+
+  /*
+   * Tab pilihan jelly (JellyTabs): kategori menu, pilihan outlet, filter berita.
+   * Tampilan sama dengan tab pill sebelumnya; transform chip diatur motion.
+   * Padding grup = ruang untuk chip yang membesar; margin negatif menyamakan tepi kiri dengan konten.
+   */
+  .jelly-tabs {
+    --jt-pad-x: 12px;
+    --jt-pad-y: 5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: var(--jt-pad-y) var(--jt-pad-x);
+    margin-inline: calc(var(--jt-pad-x) * -1);
+    user-select: none;
+  }
+  .jelly-tabs[data-surface="dark"] {
+    --jt-bg: rgb(243 245 249 / 0.05);
+    --jt-border: rgb(243 245 249 / 0.15);
+    --jt-text: rgb(243 245 249 / 0.72);
+    --jt-on-bg: rgb(143 178 245 / 0.15);
+    --jt-on-border: rgb(143 178 245 / 0.7);
+    --jt-on-text: var(--color-accent);
+  }
+  .jelly-tabs[data-surface="light"] {
+    --jt-bg: var(--color-warm);
+    --jt-border: rgb(7 19 49 / 0.15);
+    --jt-text: var(--color-ink);
+    --jt-on-bg: var(--color-ink);
+    --jt-on-border: var(--color-ink);
+    --jt-on-text: var(--color-warm);
+  }
+  .jelly-tabs__chip {
+    display: inline-flex;
+    flex-shrink: 0;
+    border-radius: var(--radius-pill);
+    transform-origin: 50% 50%;
+    outline: none;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .jelly-tabs__chip[data-on="true"] {
+    cursor: default;
+  }
+  .jelly-tabs__chip:focus-visible .jelly-tabs__skin {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+  .jelly-tabs__skin {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 44px;
+    padding: 0 20px;
+    border: 1px solid var(--jt-border);
+    border-radius: var(--radius-pill);
+    background: var(--jt-bg);
+    color: var(--jt-text);
+    font-size: var(--text-small);
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    transition:
+      background-color 300ms ease,
+      border-color 300ms ease,
+      color 300ms ease,
+      box-shadow 300ms ease,
+      transform 160ms var(--ease-out-soft);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .jelly-tabs__chip[data-on="false"]:hover .jelly-tabs__skin {
+      border-color: rgb(143 178 245 / 0.6);
+      color: var(--jt-on-text);
+    }
+    .jelly-tabs[data-surface="light"] .jelly-tabs__chip[data-on="false"]:hover .jelly-tabs__skin {
+      color: var(--jt-text);
+    }
+  }
+  .jelly-tabs__chip[data-on="true"] .jelly-tabs__skin {
+    background: var(--jt-on-bg);
+    border-color: var(--jt-on-border);
+    color: var(--jt-on-text);
+    box-shadow: 0 8px 20px -12px rgb(7 19 49 / 0.5);
+  }
+  .jelly-tabs__chip:active .jelly-tabs__skin {
+    transform: scale(0.97);
+  }
+  /* caps = label kapital kecil berjarak (tab kategori menu) */
+  .jelly-tabs[data-variant="caps"] .jelly-tabs__skin {
+    padding: 0 24px;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  /* fill = di HP chip dibagi rata selebar layar (tidak ada yang terpotong); layar lebar: berjajar biasa */
+  @media (max-width: 639px) {
+    .jelly-tabs[data-fill] {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: 1fr;
+      gap: 8px;
+    }
+    .jelly-tabs[data-fill] .jelly-tabs__chip {
+      width: 100%;
+    }
+    .jelly-tabs[data-variant="caps"][data-fill] .jelly-tabs__skin {
+      min-height: 40px;
+      padding: 0 8px;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .jelly-tabs__chip:active .jelly-tabs__skin {
+      transform: none;
+    }
+  }
+}
