@@ -88,12 +88,3 @@ export function getMenuByType(type: MenuCategoryType): MenuItem[] {
     .filter((it) => ids.includes(it.categoryId) && it.isAvailable)
     .sort((a, b) => a.sortOrder - b.sortOrder);
 }
-
-export function getSignatureItems(): MenuItem[] {
-  return items.filter((it) => it.isSignature && it.isAvailable);
-}
-
-/** Semua menu yang tersedia (untuk halaman detail /menu/[slug]). */
-export function getMenuItems(): MenuItem[] {
-  return items.filter((it) => it.isAvailable);
-}

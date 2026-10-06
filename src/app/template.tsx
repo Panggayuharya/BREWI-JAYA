@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
+import { EASE_OUT_SOFT } from "@/lib/easing";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 // true setelah halaman pertama tampil; dipakai supaya fade hanya berjalan saat pindah halaman,
@@ -23,7 +24,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
     <motion.div
       initial={firstLoad || reduced ? false : { opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.6, ease: EASE_OUT_SOFT }}
     >
       {children}
     </motion.div>

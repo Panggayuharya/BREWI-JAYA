@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { MenuItem } from "@/types";
 import { uiText } from "@/data/site";
 import { buttonClass } from "@/components/ui/Button";
+import { EASE_OUT_SOFT } from "@/lib/easing";
 import { formatRupiah, padIndex, splitName } from "@/lib/format";
 
 interface MenuDetailsProps {
@@ -17,13 +18,10 @@ interface MenuDetailsProps {
   categoryName: string;
 }
 
-const ease = [0.22, 1, 0.36, 1] as const;
-
 /** Angka harga tanpa "Rp" (label "Rp" ditulis terpisah, lebih kecil). */
 const formatNumber = (v: number) => formatRupiah(v).replace(/^Rp\s*/, "");
 
 export function MenuDetails({ item, sizerItems, index, total, categoryName }: MenuDetailsProps) {
-
   return (
     <div className="flex flex-col gap-4 *:pointer-events-auto sm:gap-5 lg:gap-8" aria-live="polite">
       {/* HP: kolom kiri di samping cup (lebar --text-w, setinggi panggung --text-min-h); desktop: tanpa batas (lihat .menu-stage) */}
@@ -38,7 +36,7 @@ export function MenuDetails({ item, sizerItems, index, total, categoryName }: Me
                   initial={{ y: "100%" }}
                   animate={{ y: 0 }}
                   exit={{ y: "-100%" }}
-                  transition={{ duration: 0.6, ease }}
+                  transition={{ duration: 0.6, ease: EASE_OUT_SOFT }}
                 >
                   {padIndex(index + 1)}
                 </motion.span>
@@ -62,7 +60,7 @@ export function MenuDetails({ item, sizerItems, index, total, categoryName }: Me
               key={item.id}
               className="[grid-area:1/1]"
               initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0, transition: { duration: 0.5, ease } }}
+              animate={{ opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE_OUT_SOFT } }}
               exit={{ opacity: 0, y: -6, transition: { duration: 0.25, ease: [0.4, 0, 1, 1] } }}
             >
               <MenuCopy item={item} />
@@ -71,8 +69,8 @@ export function MenuDetails({ item, sizerItems, index, total, categoryName }: Me
         </div>
       </div>
 
-      {/* Harga + tombol sejajar: "Rp" kecil biru aksen, angka besar */}
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-4 sm:gap-x-8">
+      {/* Harga + tombol sejajar: "Rp" kecil biru aksen, angka besar. HP: diberi jarak tambahan (--price-gap) dari panggung */}
+      <div className="mt-(--price-gap) flex flex-wrap items-center gap-x-5 gap-y-4 sm:gap-x-8">
         <p className="flex items-baseline gap-1.5 font-display font-semibold text-warm tabular-nums">
           <span className="text-[14px] font-light tracking-[0.08em] text-accent sm:text-[16px]">Rp</span>
           <PriceTicker value={item.basePrice} className="text-[26px] leading-none sm:text-price" />
@@ -133,7 +131,7 @@ function PriceTicker({ value, className }: { value: number; className?: string }
     el.textContent = formatNumber(from);
     const controls = animate(from, value, {
       duration: 0.8,
-      ease,
+      ease: EASE_OUT_SOFT,
       onUpdate: (v) => {
         el.textContent = formatNumber(Math.round(v / 500) * 500);
       },

@@ -4,7 +4,7 @@ import { gsap, MQ, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { setIntroActive } from "@/lib/introState";
 import { uiText } from "@/data/site";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { useLenis } from "@/components/motion/SmoothScrollProvider";
+import { jumpScroll, useLenis } from "@/components/motion/SmoothScrollProvider";
 import { BrandLogo } from "@/components/ui/BrandLogo";
 import { Aurora } from "@/components/reactbits/Aurora";
 import { documentTop } from "@/lib/utils";
@@ -55,9 +55,7 @@ export function Intro({ children }: { children: React.ReactNode }) {
     const jump = () => {
       if (userMoved) return;
       const y = documentTop(el);
-      if (Math.abs(window.scrollY - y) <= 2) return;
-      window.scrollTo(0, y);
-      lenis?.scrollTo(y, { immediate: true, force: true });
+      if (Math.abs(window.scrollY - y) > 2) jumpScroll(lenis, y);
     };
     const inputs = ["wheel", "touchstart", "keydown", "pointerdown"] as const;
     inputs.forEach((type) => window.addEventListener(type, stop, { passive: true }));
@@ -92,11 +90,12 @@ export function Intro({ children }: { children: React.ReactNode }) {
         gsap
           .timeline({ defaults: { ease: "power3.out" } })
           .fromTo("[data-intro-aurora]", { opacity: 0 }, { opacity: 1, duration: 2.4, ease: "power1.out" }, 0)
-          // Logo muncul pelan dari hitam
+          // Logo muncul pelan dari hitam. clearProps: filter dilepas setelah selesai (brightness(1) = tanpa efek),
+          // jadi tidak ada layer filter tersisa di elemen yang pendarnya berdenyut.
           .fromTo(
             "[data-intro-logo-inner]",
             { opacity: 0, filter: "brightness(0)" },
-            { opacity: 1, filter: "brightness(1)", duration: 1.8, ease: "power2.inOut" },
+            { opacity: 1, filter: "brightness(1)", duration: 1.8, ease: "power2.inOut", clearProps: "filter" },
             0.2,
           )
           .fromTo("[data-intro-word]", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.9, stagger: 0.12 }, 1.4)
@@ -197,9 +196,7 @@ export function Intro({ children }: { children: React.ReactNode }) {
     const d = removedDistance.current;
     if (!d) return;
     removedDistance.current = 0;
-    const y = Math.max(0, window.scrollY - d);
-    window.scrollTo(0, y);
-    lenis?.scrollTo(y, { immediate: true, force: true });
+    jumpScroll(lenis, Math.max(0, window.scrollY - d));
     ScrollTrigger.refresh();
   }, [finished, lenis]);
 
@@ -241,11 +238,12 @@ export function Intro({ children }: { children: React.ReactNode }) {
 
           <div className="relative flex items-center justify-center">
             <div data-intro-logo>
+              {/* Pendar berdenyut di sekeliling lingkaran (.logo-glow); kilau hanya di huruf j & b (BrandLogo shine) */}
               <div
                 data-intro-logo-inner
-                className="shine rounded-full opacity-0 shadow-[0_30px_80px_-20px_rgb(0_0_0/0.6),0_0_70px_rgb(143_178_245/0.14)]"
+                className="logo-glow rounded-full opacity-0 shadow-[0_30px_80px_-20px_rgb(0_0_0/0.6),0_0_70px_rgb(143_178_245/0.14)]"
               >
-                <BrandLogo size="lg" />
+                <BrandLogo size="lg" shine />
               </div>
             </div>
             {/* Nama brand di bawah logo; dipudarkan sebagai satu kesatuan saat scroll ([data-intro-copy]) */}

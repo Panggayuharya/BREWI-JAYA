@@ -1,7 +1,24 @@
 import { getSiteSettings, uiText } from "@/data/site";
-import { getSocialLinks } from "@/components/ui/SocialBar";
+import { getOutlets } from "@/data/outlets";
+import { buildContactLink, getPrimaryContact } from "@/lib/whatsapp";
 import { BrandLogo } from "@/components/ui/BrandLogo";
 import { ManagedBy } from "@/components/ui/ManagedBy";
+
+/** Sosial media + WhatsApp & Google Maps outlet utama (outlet aktif pertama). */
+function getSocialLinks() {
+  const site = getSiteSettings();
+  const outlet = getOutlets()[0];
+  const links = [
+    { label: "Instagram", href: site.instagramUrl },
+    { label: "TikTok", href: site.tiktokUrl },
+  ];
+  if (outlet) {
+    const contact = getPrimaryContact(outlet);
+    if (contact) links.push({ label: "WhatsApp", href: buildContactLink(contact, outlet) });
+    links.push({ label: "Google Maps", href: outlet.gmapsUrl });
+  }
+  return links;
+}
 
 export function Footer() {
   const site = getSiteSettings();

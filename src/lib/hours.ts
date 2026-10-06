@@ -1,7 +1,7 @@
 import type { OpeningHour } from "@/types";
 import { uiText } from "@/data/site";
 
-export const DAY_NAMES = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+const DAY_NAMES = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 
 function toMinutes(time: string) {
   const [h, m] = time.split(":").map(Number);
@@ -22,7 +22,7 @@ export function isOpenNow(hours: OpeningHour[], date = new Date()) {
   return close > open ? now >= open && now < close : now >= open || now < close;
 }
 
-export function sortByWeekFromMonday(hours: OpeningHour[]) {
+function sortByWeekFromMonday(hours: OpeningHour[]) {
   return [...hours].sort((a, b) => ((a.dayOfWeek + 6) % 7) - ((b.dayOfWeek + 6) % 7));
 }
 

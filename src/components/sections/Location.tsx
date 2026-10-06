@@ -5,6 +5,7 @@ import type { Outlet } from "@/types";
 import { gsap, MQ, useGSAP } from "@/lib/gsap";
 import { getOutlets } from "@/data/outlets";
 import { uiText } from "@/data/site";
+import { EASE_OUT_SOFT } from "@/lib/easing";
 import { getTodayHours, groupHoursByDays, isOpenNow } from "@/lib/hours";
 import { buildContactLink, getPrimaryContact } from "@/lib/whatsapp";
 import { useNow } from "@/hooks/useNow";
@@ -50,8 +51,7 @@ export function Location() {
 
   useGSAP(
     () => {
-      const mm = gsap.matchMedia();
-      mm.add(`${MQ.desktop}, ${MQ.mobile}`, () => {
+      gsap.matchMedia().add(MQ.motion, () => {
         gsap.from("[data-outlet-tabs]", {
           opacity: 0,
           y: 16,
@@ -118,7 +118,7 @@ export function Location() {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -12 }}
-                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{ duration: 0.4, ease: EASE_OUT_SOFT }}
                   className="flex flex-col gap-5 rounded-card border border-ink/8 bg-warm p-5 shadow-soft sm:p-6 lg:col-span-4"
                 >
                   <div className="flex flex-col gap-2">

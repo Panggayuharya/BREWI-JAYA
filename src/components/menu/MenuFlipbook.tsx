@@ -2,9 +2,9 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { useReducedMotion } from "motion/react";
-import { useLenis } from "@/components/motion/SmoothScrollProvider";
+import { useScrollLock } from "@/components/motion/SmoothScrollProvider";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 interface Page {
   src: string;
@@ -14,6 +14,8 @@ interface Page {
 const TURN_MS = 1000;
 // Mulai & berhenti pelan, tanpa hentakan di tengah
 const EASE = "cubic-bezier(0.45, 0.05, 0.25, 1)";
+/** Tombol panah keyboard → arah balik halaman (kanan/bawah = maju, kiri/atas = mundur) */
+const KEY_DIR: Partial<Record<string, 1 | -1>> = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
 
 /**
  * Buku menu bergaya flipbook, tampil sebagai buku terbuka (dua halaman): lembar dibalik 3D di punggung
@@ -30,8 +32,7 @@ export function MenuFlipbook({ pages }: { pages: Page[] }) {
   const [full, setFull] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
-  const reduce = useReducedMotion() === true;
-  const lenis = useLenis();
+  const reduce = useReducedMotion();
   const total = pages.length;
   const vertical = useMediaQuery("(max-width: 767px) and (orientation: portrait)");
 
@@ -56,17 +57,15 @@ export function MenuFlipbook({ pages }: { pages: Page[] }) {
 
   // Layar penuh: kunci scroll halaman, pakai Fullscreen API bila ada (HP tertentu tidak mendukung → tetap overlay penuh),
   // panah keyboard membalik halaman, Esc menutup.
+  useScrollLock(full);
   useEffect(() => {
     if (!full) return;
-    lenis?.stop();
-    const prevOverflow = document.documentElement.style.overflow;
-    document.documentElement.style.overflow = "hidden";
     const el = overlayRef.current;
     if (el?.requestFullscreen) void el.requestFullscreen().catch(() => {});
 
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight" || e.key === "ArrowDown") goRef.current(1);
-      if (e.key === "ArrowLeft" || e.key === "ArrowUp") goRef.current(-1);
+      const dir = KEY_DIR[e.key];
+      if (dir) goRef.current(dir);
       if (e.key === "Escape") setFull(false);
     };
     // Keluar dari fullscreen browser (mis. tombol Esc bawaan) → tutup overlay juga
@@ -78,10 +77,8 @@ export function MenuFlipbook({ pages }: { pages: Page[] }) {
     return () => {
       window.removeEventListener("keydown", onKey);
       document.removeEventListener("fullscreenchange", onFsChange);
-      document.documentElement.style.overflow = prevOverflow;
-      lenis?.start();
     };
-  }, [full, lenis]);
+  }, [full]);
 
   const book = { pages, current, turning, reduce, go, vertical };
 
@@ -164,8 +161,8 @@ function Book({
       onKeyDown={
         keyboard
           ? (e) => {
-              if (e.key === "ArrowRight" || e.key === "ArrowDown") go(1);
-              if (e.key === "ArrowLeft" || e.key === "ArrowUp") go(-1);
+              const dir = KEY_DIR[e.key];
+              if (dir) go(dir);
             }
           : undefined
       }

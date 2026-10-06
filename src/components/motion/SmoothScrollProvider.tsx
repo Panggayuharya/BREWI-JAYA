@@ -5,8 +5,6 @@ import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { documentTop } from "@/lib/utils";
 
-type ScrollTarget = string | number | HTMLElement;
-
 const LenisContext = createContext<Lenis | null>(null);
 
 export function SmoothScrollProvider({ children }: { children: React.ReactNode }) {
@@ -42,27 +40,44 @@ export function useLenis() {
   return useContext(LenisContext);
 }
 
+/** Kunci scroll halaman (Lenis + overflow <html>) selama `locked` true; dipakai overlay layar penuh. */
+export function useScrollLock(locked = true) {
+  const lenis = useLenis();
+  useEffect(() => {
+    if (!locked) return;
+    lenis?.stop();
+    const html = document.documentElement;
+    const prevOverflow = html.style.overflow;
+    html.style.overflow = "hidden";
+    return () => {
+      html.style.overflow = prevOverflow;
+      lenis?.start();
+    };
+  }, [locked, lenis]);
+}
+
+/** Lompat langsung ke posisi scroll `y` (tanpa animasi); Lenis ikut disinkronkan bila aktif. */
+export function jumpScroll(lenis: Lenis | null, y: number) {
+  window.scrollTo(0, y);
+  lenis?.scrollTo(y, { immediate: true, force: true });
+}
+
 /** easeInOutCubic: pelan di awal & akhir, tanpa hentakan */
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
 /**
- * Scroll halus ke target; fallback ke native scroll jika Lenis tidak aktif (reduced motion).
+ * Scroll halus ke elemen (selector, mis. "#menu"); fallback ke native scroll jika Lenis tidak aktif (reduced motion).
+ * Posisi dihitung lewat documentTop agar tetap tepat saat section sedang di-pin.
  * Durasi mengikuti jarak (0,7–1,8 detik) supaya lompatan jauh tetap tenang dan lompatan dekat tetap cepat.
  * `onComplete` dipanggil saat scroll selesai (dipakai navbar untuk menahan chip aktif selama perjalanan).
  */
 export function useScrollTo() {
   const lenis = useLenis();
   return useCallback(
-    (target: ScrollTarget, offset = 0, onComplete?: () => void) => {
-      // Elemen diubah ke angka lewat documentTop agar tetap tepat saat section sedang di-pin
-      let top: number;
-      if (typeof target === "number") top = target;
-      else {
-        const el = typeof target === "string" ? document.querySelector(target) : target;
-        if (!el) return;
-        top = documentTop(el);
-      }
-      const to = top + offset;
+    (selector: string, onComplete?: () => void) => {
+      const el = document.querySelector(selector);
+      if (!el) return;
+      const to = documentTop(el);
       if (!lenis) {
         window.scrollTo({ top: to });
         onComplete?.();

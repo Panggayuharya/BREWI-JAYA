@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { getNews, getNewsBySlug, getRelatedNews } from "@/data/news";
 import { getSiteSettings, uiText } from "@/data/site";
 import { NewsBody, NewsHero } from "@/components/news/NewsHero";
-import { NewsCard, NewsImage, NewsMeta } from "@/components/news/NewsCard";
+import { NEWS_GRID, NEWS_GRID_SIZES, NewsCard, NewsImage, NewsMeta } from "@/components/news/NewsCard";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -31,7 +31,7 @@ export default async function NewsDetailPage({ params }: Params) {
   return (
     <>
       {/* Hero ditahan; konten (foto + isi) naik menimpanya */}
-      <NewsHero className="pb-[calc(var(--radius-section)+4.5rem)]">
+      <NewsHero>
         <Link
           href="/news"
           className="group inline-flex w-fit items-center gap-2 text-small font-semibold tracking-[0.14em] text-cream/70 uppercase transition-colors duration-300 hover:text-accent"
@@ -81,10 +81,10 @@ export default async function NewsDetailPage({ params }: Params) {
                 {uiText.newsSeeAll} →
               </Link>
             </div>
-            <ul className="grid grid-cols-1 gap-x-8 gap-y-14 md:grid-cols-2 lg:grid-cols-3">
+            <ul className={NEWS_GRID}>
               {related.map((n) => (
                 <li key={n.id}>
-                  <NewsCard item={n} sizes="(min-width: 1024px) 380px, (min-width: 768px) 50vw, 100vw" />
+                  <NewsCard item={n} sizes={NEWS_GRID_SIZES} />
                 </li>
               ))}
             </ul>

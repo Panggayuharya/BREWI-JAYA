@@ -1,5 +1,4 @@
-"use client";
-import { getPageSection, getPlacePhotos, placeBackground } from "@/data/site";
+import { getPageSection, getPlacePhotos, placeBackgroundImage } from "@/data/site";
 import { StackSpread } from "@/components/ui/StackSpread";
 
 /**
@@ -18,7 +17,7 @@ export function Place() {
       data-nav-theme="light"
       items={photos}
       title={section?.title ?? ""}
-      backgroundImage={placeBackground.image}
+      backgroundImage={placeBackgroundImage}
     />
   );
 }

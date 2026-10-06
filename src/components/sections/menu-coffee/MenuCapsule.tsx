@@ -34,7 +34,7 @@ type Slot = { style: CSSProperties; visible: boolean };
  * Putaran: muncul dari atas (272°, tersembunyi) → 261° → 249° → masuk ke tengah → kiri bawah (203°) → 191°.
  * Jarak antar thumbnail 12° di atas dan di bawah, jadi atas & bawah sama rapinya dan tidak menempel ke cup utama.
  */
-const DESKTOP_ANGLES: Record<number, { deg: number; visible: boolean }> = {
+const ANGLES: Record<number, { deg: number; visible: boolean }> = {
   [-3]: { deg: 176, visible: false }, // keluar (di bawah layar)
   [-2]: { deg: 191, visible: true },
   [-1]: { deg: 203, visible: true },
@@ -59,10 +59,11 @@ function onCircle(deg: number, visible: boolean): Slot {
   };
 }
 
-const toSlots = (angles: Record<number, { deg: number; visible: boolean }>): Record<number, Slot> =>
-  Object.fromEntries(Object.entries(angles).map(([k, a]) => [k, onCircle(a.deg, a.visible)]));
-
-const SLOTS = toSlots(DESKTOP_ANGLES);
+const SLOTS: Record<number, Slot> = Object.fromEntries(
+  Object.entries(ANGLES).map(([k, a]) => [k, onCircle(a.deg, a.visible)]),
+);
+/** Slot cadangan untuk offset di luar ANGLES: tersembunyi di luar kanan atas. */
+const HIDDEN_SLOT = SLOTS[4];
 
 const CURRENT_STYLE: CSSProperties = {
   left: "var(--cap-x)",
@@ -86,8 +87,6 @@ const CUP_SHADOW =
  * supaya thumbnail bisa ditempatkan di tepi lingkaran navy. Wajib berada di dalam `.menu-stage`.
  */
 export function MenuCapsule({ items, step, onSelect }: MenuCapsuleProps) {
-  const slots = SLOTS;
-  const hiddenSlot = slots[4];
   const n = items.length;
   const active = ((step % n) + n) % n;
 
@@ -140,7 +139,7 @@ export function MenuCapsule({ items, step, onSelect }: MenuCapsuleProps) {
         // (Sengaja tanpa AnimatePresence: membuat animasi layout semua cup jauh lebih berat / patah-patah.)
         const lap = (offset - i + step) / n;
         const isCurrent = offset === 0;
-        const slot = slots[offset] ?? hiddenSlot;
+        const slot = SLOTS[offset] ?? HIDDEN_SLOT;
         const hidden = !isCurrent && !slot.visible;
         const style = isCurrent ? CURRENT_STYLE : slot.style;
         // Foto transparan tampil tanpa bingkai; foto biasa (tanpa cutout) tetap dalam bingkai bulat.

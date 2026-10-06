@@ -35,12 +35,14 @@ const items: (GalleryItem & { row: Row })[] = photos.map((p, i) => ({
   row: p.row,
 }));
 
+const sorted = [...items].sort((a, b) => a.sortOrder - b.sortOrder);
+const rows: [GalleryItem[], GalleryItem[]] = [sorted.filter((g) => g.row === "top"), sorted.filter((g) => g.row === "bottom")];
+
 export function getGalleryItems(): GalleryItem[] {
-  return [...items].sort((a, b) => a.sortOrder - b.sortOrder);
+  return sorted;
 }
 
 /** Dua baris untuk marquee: baris atas (4:5) dan baris bawah (5:4). */
 export function getGalleryRows(): [GalleryItem[], GalleryItem[]] {
-  const sorted = [...items].sort((a, b) => a.sortOrder - b.sortOrder);
-  return [sorted.filter((g) => g.row === "top"), sorted.filter((g) => g.row === "bottom")];
+  return rows;
 }

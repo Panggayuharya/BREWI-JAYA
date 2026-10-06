@@ -3,10 +3,10 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { INTRO_EVENT } from "@/lib/introState";
+import { documentTop } from "@/lib/utils";
 import { getSiteSettings, navLinks } from "@/data/site";
 import { useScrollTo } from "@/components/motion/SmoothScrollProvider";
 import { BrandLogo } from "@/components/ui/BrandLogo";
-import { documentTop } from "@/lib/utils";
 import { JellyNav } from "@/components/ui/JellyNav";
 import { MobileMenu } from "./MobileMenu";
 
@@ -31,7 +31,7 @@ export function Navbar() {
     // Section menandai dirinya dengan data-nav (id link) dan data-nav-theme (dark | light | cream).
     // Section aktif = section yang memotong garis patokan: tengah layar, atau data-nav-line (px dari atas).
     // Posisi diukur dengan documentTop (posisi asli di halaman), jadi tetap benar saat ada section
-    // yang sedang di-pin tanpa spacing (overlapping). Di dalam jarak pin (Intro, Makanan) tidak ada
+    // yang sedang di-pin tanpa spacing (overlapping). Di dalam jarak pin (mis. Intro) tidak ada
     // section yang cocok → link aktif terakhir dipertahankan.
     const sections = Array.from(document.querySelectorAll<HTMLElement>("[data-nav]"));
     const spy = (scroll: number) => {
@@ -79,7 +79,7 @@ export function Navbar() {
     }
     travelTo.current = id;
     setActive(id);
-    scrollTo(`#${id}`, 0, () => {
+    scrollTo(`#${id}`, () => {
       travelTo.current = null;
       ScrollTrigger.update(); // sinkronkan tema navbar dengan section tujuan
     });

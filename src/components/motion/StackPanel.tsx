@@ -8,7 +8,7 @@ interface StackPanelProps {
   /**
    * Tahan (pin) section sebelumnya selama panel ini naik, sehingga panel benar-benar
    * menimpa section itu (bukan sekadar lewat). Jangan dipakai jika section sebelumnya
-   * sudah di-pin sendiri (Intro, Menu Makanan) — tidak boleh pin di dalam/di atas pin.
+   * sudah di-pin sendiri (Intro) — tidak boleh pin di dalam/di atas pin.
    */
   pinPrevious?: boolean;
 }
@@ -23,36 +23,31 @@ export function StackPanel({ children, className = "", pinPrevious = false }: St
 
   useGSAP(
     () => {
-      const mm = gsap.matchMedia();
-      mm.add(`${MQ.desktop}, ${MQ.mobile}`, () => {
+      if (!pinPrevious) return;
+      gsap.matchMedia().add(MQ.motion, () => {
         const prev = ref.current?.previousElementSibling as HTMLElement | null;
-        if (pinPrevious && prev) {
-          // Pin dimulai saat dasar section sebelumnya menyentuh dasar layar (= panel ini mulai naik),
-          // selesai saat panel ini menutupi layar. pinSpacing false → panel naik di atasnya.
-          // clamp(): di halaman pendek (hero News) titik mulai bisa < 0; dibatasi ke 0 supaya
-          // section sebelumnya di-pin di posisi aslinya, bukan terdorong ke bawah.
-          // Jika section sebelumnya lebih pendek dari layar (mis. Galeri di HP), pin baru dimulai saat
-          // atasnya menyentuh atas layar — kalau tidak, ia "tergantung" di tengah layar sementara
-          // section di atasnya terus ter-scroll, sehingga tampak menumpuk/aneh.
-          ScrollTrigger.create({
-            trigger: ref.current,
-            start: () => `clamp(top ${Math.min(prev.offsetHeight, window.innerHeight)}px)`,
-            end: "top top",
-            pin: prev,
-            pinSpacing: false,
-          });
-        }
-        // Section sebelumnya tidak lagi dikecilkan saat ditimpa (permintaan pemilik): tetap ukuran normal.
+        if (!prev) return;
+        // Pin dimulai saat dasar section sebelumnya menyentuh dasar layar (= panel ini mulai naik),
+        // selesai saat panel ini menutupi layar. pinSpacing false → panel naik di atasnya.
+        // clamp(): di halaman pendek (hero News) titik mulai bisa < 0; dibatasi ke 0 supaya
+        // section sebelumnya di-pin di posisi aslinya, bukan terdorong ke bawah.
+        // Jika section sebelumnya lebih pendek dari layar (mis. Galeri di HP), pin baru dimulai saat
+        // atasnya menyentuh atas layar — kalau tidak, ia "tergantung" di tengah layar sementara
+        // section di atasnya terus ter-scroll, sehingga tampak menumpuk/aneh.
+        ScrollTrigger.create({
+          trigger: ref.current,
+          start: () => `clamp(top ${Math.min(prev.offsetHeight, window.innerHeight)}px)`,
+          end: "top top",
+          pin: prev,
+          pinSpacing: false,
+        });
       });
     },
     { scope: ref },
   );
 
   return (
-    <div
-      ref={ref}
-      className={`relative -mt-(--radius-section) overflow-clip rounded-t-section shadow-lift ${className}`}
-    >
+    <div ref={ref} className={`relative -mt-(--radius-section) overflow-clip rounded-t-section shadow-lift ${className}`}>
       {children}
     </div>
   );

@@ -7,11 +7,13 @@
 //
 // Interaksi: foto miring 3D + kilau cahaya mengikuti kursor dan zoom sangat pelan (Ken Burns).
 
-import { motion, useMotionTemplate, useMotionValue, useReducedMotion, useSpring } from "motion/react";
+import { motion, useMotionTemplate, useMotionValue, useSpring } from "motion/react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { useLenis } from "@/components/motion/SmoothScrollProvider";
+import { useScrollLock } from "@/components/motion/SmoothScrollProvider";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { EASE_OUT_SOFT } from "@/lib/easing";
 
 export interface SpotlightItem {
   src: string;
@@ -26,7 +28,6 @@ export interface Rect {
   height: number;
 }
 
-const EASE = [0.22, 1, 0.36, 1] as const;
 const FLY = 0.95;
 // Di bawah lebar ini foto di atas, teks di bawah
 const STACK_BELOW = 768;
@@ -58,8 +59,7 @@ export function PhotoSpotlight({
   onCloseStart: () => void;
   onClosed: () => void;
 }) {
-  const reduce = useReducedMotion() === true;
-  const lenis = useLenis();
+  const reduce = useReducedMotion();
   const [vp, setVp] = useState(() => ({ w: window.innerWidth, h: window.innerHeight }));
   const [closeTo, setCloseTo] = useState<Rect | null>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -108,10 +108,8 @@ export function PhotoSpotlight({
   };
 
   // Kunci scroll halaman, Esc menutup, ikuti ukuran layar
+  useScrollLock();
   useEffect(() => {
-    lenis?.stop();
-    const prevOverflow = document.documentElement.style.overflow;
-    document.documentElement.style.overflow = "hidden";
     dialogRef.current?.focus({ preventScroll: true });
 
     const onKey = (e: KeyboardEvent) => {
@@ -123,10 +121,8 @@ export function PhotoSpotlight({
     return () => {
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("resize", onResize);
-      document.documentElement.style.overflow = prevOverflow;
-      lenis?.start();
     };
-  }, [lenis]);
+  }, []);
 
   // Cadangan bila onAnimationComplete tidak terpanggil
   useEffect(() => {
@@ -156,7 +152,7 @@ export function PhotoSpotlight({
         className="absolute inset-0 bg-[linear-gradient(90deg,rgb(7_19_49/0.1),rgb(7_19_49/0.3)_55%,rgb(7_19_49/0.5))] max-md:bg-[linear-gradient(180deg,rgb(7_19_49/0.1),rgb(7_19_49/0.55)_55%)]"
         initial={{ opacity: 0 }}
         animate={{ opacity: closing ? 0 : 1 }}
-        transition={{ duration: reduce ? 0 : 0.7, ease: EASE }}
+        transition={{ duration: reduce ? 0 : 0.7, ease: EASE_OUT_SOFT }}
       />
 
       {/* Foto yang terbang dari kartu ke sisi kiri */}
@@ -165,7 +161,7 @@ export function PhotoSpotlight({
         style={{ rotateX, rotateY, transformPerspective: 1400 }}
         initial={{ ...from }}
         animate={{ ...(closeTo ?? target) }}
-        transition={{ duration: fly, ease: EASE }}
+        transition={{ duration: fly, ease: EASE_OUT_SOFT }}
         onAnimationComplete={() => {
           if (closing) onClosed();
         }}
@@ -214,7 +210,7 @@ export function PhotoSpotlight({
                 className="inline-block origin-bottom-left"
                 variants={{
                   hidden: reduce ? { opacity: 0 } : { y: "110%", rotate: 4 },
-                  shown: { y: "0%", rotate: 0, opacity: 1, transition: { duration: reduce ? 0 : 0.9, ease: EASE } },
+                  shown: { y: "0%", rotate: 0, opacity: 1, transition: { duration: reduce ? 0 : 0.9, ease: EASE_OUT_SOFT } },
                 }}
               >
                 {word}
@@ -242,7 +238,7 @@ function Reveal({ children, stacked, reduce }: { children: React.ReactNode; stac
     <motion.div
       variants={{
         hidden: reduce ? { opacity: 0 } : { opacity: 0, x: stacked ? 0 : 36, y: stacked ? 18 : 0, filter: "blur(6px)" },
-        shown: { opacity: 1, x: 0, y: 0, filter: "blur(0px)", transition: { duration: reduce ? 0 : 0.8, ease: EASE } },
+        shown: { opacity: 1, x: 0, y: 0, filter: "blur(0px)", transition: { duration: reduce ? 0 : 0.8, ease: EASE_OUT_SOFT } },
       }}
     >
       {children}

@@ -4,6 +4,7 @@ import { AnimatePresence, motion, useInView } from "motion/react";
 import type { MenuItem } from "@/types";
 import { getCategoryById, getMenuByType, getMenuCategories } from "@/data/menu";
 import { uiText } from "@/data/site";
+import { EASE_OUT_SOFT } from "@/lib/easing";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { circularOffset, MenuCapsule } from "./menu-coffee/MenuCapsule";
 import { MenuDetails } from "./menu-coffee/MenuDetails";
@@ -20,7 +21,6 @@ const allItems = [...menuSets.drinks, ...menuSets.food];
 
 /** Jeda putaran otomatis (ms) */
 const AUTOPLAY_MS = 2500;
-const ease = [0.22, 1, 0.36, 1] as const;
 
 /**
  * Menu (design.md 7, referensi 2): teks menu di kiri, foto kapsul di kanan di atas lingkaran navy
@@ -70,11 +70,11 @@ export function MenuCoffee() {
       id="menu"
       data-nav="menu"
       data-nav-theme="light"
-      className="relative overflow-hidden bg-ink text-warm tab-land:min-h-screen-s lg:h-screen-s"
+      className="relative min-h-screen-s overflow-hidden bg-ink text-warm lg:h-screen-s"
     >
       {/* .menu-stage = satu sumber ukuran lingkaran, cup utama & thumbnail (lihat globals.css).
-          HP: tinggi mengikuti isi (tidak dipaksa satu layar penuh) supaya section tidak terlalu besar. */}
-      <div data-stack-content className="menu-stage relative bg-ink tab-land:min-h-screen-s lg:h-full">
+          Semua ukuran layar setinggi satu layar penuh; di HP sisa tinggi dibagi ke jarak antar blok (--free). */}
+      <div data-stack-content className="menu-stage relative min-h-screen-s bg-ink lg:h-full">
         {/* Lingkaran putih: terang di sisi cup, sedikit kebiruan di tepi supaya serasi dengan navy */}
         <div
           data-menu-blob
@@ -97,7 +97,7 @@ export function MenuCoffee() {
             key={set}
             className="absolute inset-0 z-10"
             initial={reduced ? false : { opacity: 0, y: 40, scale: 0.96, filter: "blur(8px)" }}
-            animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)", transition: { duration: 0.6, ease } }}
+            animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)", transition: { duration: 0.6, ease: EASE_OUT_SOFT } }}
             exit={reduced ? { opacity: 0 } : { opacity: 0, y: 40, scale: 0.96, filter: "blur(8px)", transition: { duration: 0.4, ease: "easeIn" } }}
           >
             <MenuCapsule items={items} step={step} onSelect={select} />
@@ -108,10 +108,10 @@ export function MenuCoffee() {
             (--cap-y + --cap-h/2 = 44svh + 4% cap-h), bukan tengah layar, jadi atas & bawah teks seimbang dengan cup.
             Caranya: pb = nav-h + 12svh - 8% cap-h (pt tetap nav-h, jadi teks tidak pernah masuk ke bawah navbar).
             HP: eyebrow + tab di atas (tinggi tetap --head-h), lalu teks di kiri sejajar dengan cup di kanan. */}
-        <div className="container-brewi pointer-events-none relative z-20 flex flex-col justify-start gap-3 pt-(--text-top) pb-10 *:pointer-events-auto tab-land:min-h-screen-s tab-land:justify-center tab-land:gap-5 tab-land:pt-(--nav-h) tab-land:pb-6 lg:h-full lg:justify-center lg:gap-7 lg:pt-(--nav-h) lg:pb-[calc(var(--nav-h)+12svh-var(--cap-h)*0.08)]">
+        <div className="container-brewi pointer-events-none relative z-20 flex flex-col justify-start gap-3 min-h-screen-s pt-(--text-top) pb-10 *:pointer-events-auto tab-land:justify-center tab-land:gap-5 tab-land:pt-(--nav-h) tab-land:pb-6 lg:h-full lg:justify-center lg:gap-7 lg:pt-(--nav-h) lg:pb-[calc(var(--nav-h)+12svh-var(--cap-h)*0.08)]">
           {/* HP: blok setinggi --head-h supaya awal kolom teks (--row-top) pasti sejajar dengan panggung cup.
               Tablet landscape & desktop: `contents` → eyebrow & tab tetap anak langsung flex di atas (tata letak lama). */}
-          <div className="flex h-(--head-h) flex-col gap-3 *:pointer-events-auto tab-land:contents lg:contents">
+          <div className="mb-(--row-gap) flex h-(--head-h) flex-col gap-3 *:pointer-events-auto tab-land:contents lg:contents">
             <h2 className="eyebrow w-fit text-accent">{uiText.menuEyebrow}</h2>
 
             {/* Efek jelly saat diklik (juga saat berganti otomatis). HP: 3 tab dibagi rata selebar layar */}

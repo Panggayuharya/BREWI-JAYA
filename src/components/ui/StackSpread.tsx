@@ -18,7 +18,6 @@ import {
   motion,
   useMotionValue,
   useMotionValueEvent,
-  useReducedMotion,
   useScroll,
   useSpring,
   useTransform,
@@ -28,20 +27,15 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { useViewportHeight } from "@/hooks/useViewportHeight";
 import { MediaImage } from "@/components/ui/MediaImage";
-import { PhotoSpotlight, type Rect } from "@/components/ui/PhotoSpotlight";
+import { PhotoSpotlight, type Rect, type SpotlightItem } from "@/components/ui/PhotoSpotlight";
 import { uiText } from "@/data/site";
 
-export interface StackSpreadItem {
-  src: string;
-  alt: string;
-  /** Cerita singkat yang muncul saat foto diklik */
-  description?: string;
-}
-
 interface Slot {
-  /** posisi akhir desktop (vw/vh dari tengah), ukuran kartu (vw × vh), skala */
-  target: { x: number; y: number; w: number; h: number; scale: number };
+  /** posisi akhir desktop (cqw/cqh dari tengah panggung) */
+  target: { x: number; y: number };
   /** posisi akhir di layar sentuh (grid 2 kolom) */
   targetSm: { x: number; y: number };
   /** posisi & sudut saat masih bertumpuk */
@@ -49,25 +43,35 @@ interface Slot {
   stackRotate: number;
 }
 
-// Urutan = urutan tumpukan (belakang → depan). Sama dengan tata letak versi asli.
+// Urutan = urutan tumpukan (belakang → depan).
+// Satuan cqw/cqh = persen lebar/tinggi panggung sticky (bukan vw/vh), jadi tata letak selalu pas dengan
+// layar yang benar-benar terlihat — juga di browser HP (Safari, WhatsApp) yang toolbar-nya naik-turun.
+// Desktop: semua kartu seukuran (CARD), disusun 3 atas · 2 samping · 3 bawah dengan ruang lega di tengah
+// untuk judul.
 const SLOTS: Slot[] = [
-  { stackOffset: { x: -8, y: -10 }, stackRotate: -18, target: { x: -20, y: -31, w: 17, h: 22, scale: 0.7 }, targetSm: { x: -22, y: -32 } },
-  { stackOffset: { x: 14, y: -10 }, stackRotate: 20, target: { x: 32, y: -27, w: 18, h: 32, scale: 0.9 }, targetSm: { x: 22, y: -32 } },
-  { stackOffset: { x: -16, y: 0 }, stackRotate: -4, target: { x: -36, y: -6, w: 15, h: 32, scale: 0.9 }, targetSm: { x: -22, y: -18 } },
-  { stackOffset: { x: 1, y: -10 }, stackRotate: -2, target: { x: 6, y: -29, w: 25, h: 30, scale: 0.8 }, targetSm: { x: 22, y: -18 } },
-  { stackOffset: { x: 18, y: 1 }, stackRotate: 6, target: { x: 37, y: 3, w: 18, h: 32, scale: 0.8 }, targetSm: { x: -22, y: 18 } },
-  { stackOffset: { x: -6, y: 10 }, stackRotate: 6, target: { x: -24, y: 26, w: 22, h: 25, scale: 0.9 }, targetSm: { x: 22, y: 18 } },
-  { stackOffset: { x: 8, y: 7 }, stackRotate: 3, target: { x: 2, y: 28, w: 20, h: 26, scale: 0.8 }, targetSm: { x: -22, y: 32 } },
-  { stackOffset: { x: 20, y: 12 }, stackRotate: -7, target: { x: 25, y: 26, w: 16, h: 20, scale: 0.9 }, targetSm: { x: 22, y: 32 } },
+  { stackOffset: { x: -8, y: -10 }, stackRotate: -18, target: { x: -30, y: -26 }, targetSm: { x: -22, y: -33 } },
+  { stackOffset: { x: 14, y: -10 }, stackRotate: 20, target: { x: 1, y: -29 }, targetSm: { x: 22, y: -33 } },
+  { stackOffset: { x: -16, y: 0 }, stackRotate: -4, target: { x: 31, y: -25 }, targetSm: { x: -22, y: -19 } },
+  { stackOffset: { x: 1, y: -10 }, stackRotate: -2, target: { x: -37, y: 1 }, targetSm: { x: 22, y: -19 } },
+  { stackOffset: { x: 18, y: 1 }, stackRotate: 6, target: { x: 37, y: 3 }, targetSm: { x: -22, y: 19 } },
+  { stackOffset: { x: -6, y: 10 }, stackRotate: 6, target: { x: -28, y: 26 }, targetSm: { x: 22, y: 19 } },
+  { stackOffset: { x: 8, y: 7 }, stackRotate: 3, target: { x: 2, y: 28 }, targetSm: { x: -22, y: 33 } },
+  { stackOffset: { x: 20, y: 12 }, stackRotate: -7, target: { x: 30, y: 25 }, targetSm: { x: 22, y: 33 } },
 ];
 
-export const STACK_SPREAD_MAX = SLOTS.length;
+// Tinggi section (svh) = jarak scroll untuk menyebar.
+const SCROLL_LENGTH = 350;
 
-// Progres scroll saat tumpukan mulai & selesai menyebar.
+// Progres scroll saat tumpukan mulai & selesai menyebar, dan saat judul mulai muncul.
 const SCATTER_START = 0.12;
 const SCATTER_END = 0.9;
+const TEXT_FADE_START = 0.3;
 
-// Desktop: seluruh tata letak foto digeser ke bawah (vh) supaya baris atas tidak terpotong navbar
+// Desktop: ukuran kartu seragam (cqw × cqh) dan skala saat masih bertumpuk (tumpukan sedikit lebih besar)
+const CARD = { w: 13, h: 17 };
+const STACK_SCALE_DESKTOP = 1.2;
+
+// Desktop: seluruh tata letak foto digeser ke bawah (cqh) supaya baris atas tidak terpotong navbar
 const OFFSET_Y = 5;
 
 const PARALLAX_X = 2.6;
@@ -75,9 +79,12 @@ const PARALLAX_Y = 2.2;
 const PARALLAX_SPRING = { stiffness: 90, damping: 22, mass: 0.6 };
 const parallaxDepth = (i: number, total: number) => (total <= 1 ? 1 : 0.55 + (i / (total - 1)) * 0.75);
 
-// Layar sentuh: grid 2 kolom dengan ukuran kartu seragam
-// Baris HP di ±18vh & ±32vh, kartu 17vh: baris atas tetap di bawah navbar bahkan di layar pendek (640px)
-const SMALL = { scale: 0.72, colX: 22, card: { w: 40, h: 17 } };
+// Layar sentuh: grid 2 kolom dengan ukuran kartu seragam.
+// Baris HP di ±19cqh & ±33cqh, kartu 17cqh (×0.72). Seluruh grid + judul digeser turun setengah tinggi navbar
+// (navShift), jadi grid berada tepat di tengah ruang antara navbar dan tepi bawah layar: jarak navbar → baris atas
+// sama dengan baris bawah → tepi layar, dan ruang di antara baris 2 & 3 cukup untuk judul.
+// stackScale = skala kartu saat masih bertumpuk.
+const SMALL = { scale: 0.72, stackScale: 0.82, colX: 22, card: { w: 40, h: 17 }, navShift: "var(--nav-h) * 0.5" };
 
 function usePointerParallax(active: boolean, enabled: boolean) {
   const rawX = useMotionValue(0);
@@ -117,7 +124,6 @@ function Card({
   progress,
   flat,
   isSmall,
-  stackScale,
   pointer,
   depth,
   hidden,
@@ -126,13 +132,12 @@ function Card({
   buttonRef,
   onOpen,
 }: {
-  item: StackSpreadItem;
+  item: SpotlightItem;
   slot: Slot;
   z: number;
   progress: MotionValue<number>;
   flat: boolean;
   isSmall: boolean;
-  stackScale: number;
   pointer: { x: MotionValue<number>; y: MotionValue<number> };
   depth: number;
   /** Disembunyikan selama fotonya tampil di PhotoSpotlight */
@@ -146,19 +151,21 @@ function Card({
 }) {
   const { target, stackOffset } = slot;
   const stackRotate = flat ? 0 : slot.stackRotate;
-  const restScale = isSmall ? SMALL.scale : target.scale;
+  const restScale = isSmall ? SMALL.scale : 1;
+  const startScale = isSmall ? SMALL.stackScale : STACK_SCALE_DESKTOP;
   const endX = isSmall ? Math.sign(slot.targetSm.x) * SMALL.colX : target.x;
   const endY = isSmall ? slot.targetSm.y : target.y + OFFSET_Y;
+  const shiftY = isSmall ? SMALL.navShift : "0px";
 
   // -50% menjaga kartu tetap berpusat di titik jangkarnya
   const translate = useTransform([progress, pointer.x, pointer.y], ([p, px, py]: number[]) => {
     const tx = stackOffset.x + (endX - stackOffset.x) * p;
     const ty = stackOffset.y + (endY - stackOffset.y) * p;
     const drift = depth * p;
-    return `calc(-50% + ${tx - px * PARALLAX_X * drift}vw) calc(-50% + ${ty - py * PARALLAX_Y * drift}vh)`;
+    return `calc(-50% + ${tx - px * PARALLAX_X * drift}cqw) calc(-50% + ${ty - py * PARALLAX_Y * drift}cqh + ${shiftY})`;
   });
   const rotate = useTransform(progress, [0, 1], [stackRotate, 0]);
-  const scale = useTransform(progress, [0, 1], [stackScale, restScale]);
+  const scale = useTransform(progress, [0, 1], [startScale, restScale]);
 
   return (
     <motion.div
@@ -168,8 +175,8 @@ function Card({
         dimmed && "opacity-60 blur-[1.5px]",
       )}
       style={{
-        width: `${isSmall ? SMALL.card.w : target.w}vw`,
-        height: `${isSmall ? SMALL.card.h : target.h}vh`,
+        width: `${isSmall ? SMALL.card.w : CARD.w}cqw`,
+        height: `${isSmall ? SMALL.card.h : CARD.h}cqh`,
         zIndex: z,
         translate,
         rotate,
@@ -194,7 +201,7 @@ function Card({
           alt={item.alt}
           // Tentang tepat di bawah Home; saat halaman dibuka/di-refresh di #tentang foto ini jadi LCP
           loading="eager"
-          sizes="(min-width: 1024px) 25vw, 45vw"
+          sizes="(min-width: 1024px) 16vw, 45vw"
           label={item.alt}
           className="photo-warm"
         />
@@ -217,43 +224,20 @@ function Card({
   );
 }
 
-export interface StackSpreadProps extends Omit<React.ComponentPropsWithoutRef<"section">, "children" | "title"> {
-  items: StackSpreadItem[];
+interface StackSpreadProps extends Omit<React.ComponentPropsWithoutRef<"section">, "children" | "title"> {
+  items: SpotlightItem[];
   /** Judul besar di tengah (muncul saat foto menyebar) */
   title: string;
-  /** Kalimat kecil di bawah judul */
-  subtitle?: string;
-  /** Paragraf lebih panjang di bawah subtitle (desktop saja; di layar sentuh tidak muat di antara grid foto) */
-  body?: string;
-  /** Petunjuk scroll di bawah layar selama foto masih bertumpuk */
-  hint?: string;
   /** Foto latar (digelapkan) di belakang kartu */
   backgroundImage?: string;
-  /** Jarak scroll untuk menyebar, dalam vh */
-  scrollLength?: number;
-  /** Skala kartu saat masih bertumpuk */
-  stackScale?: number;
-  /** Progres (0–1) saat judul mulai muncul */
-  textFadeStart?: number;
 }
 
-export function StackSpread({
-  items,
-  title,
-  subtitle,
-  body,
-  hint = "Scroll",
-  backgroundImage,
-  scrollLength = 350,
-  stackScale = 0.82,
-  textFadeStart = 0.3,
-  className,
-  ...props
-}: StackSpreadProps) {
+export function StackSpread({ items, title, backgroundImage, className, ...props }: StackSpreadProps) {
   const wrapRef = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
   // Layar sentuh (bukan sekadar sempit) → grid 2 kolom tanpa parallax kursor
   const isSmall = useMediaQuery("(pointer: coarse)");
+  const viewportH = useViewportHeight();
 
   const { scrollYProgress } = useScroll({ target: wrapRef, offset: ["start start", "end end"] });
   // tahan, menyebar, lalu diam
@@ -263,16 +247,16 @@ export function StackSpread({
   useMotionValueEvent(progress, "change", (p) => {
     setSpread((was) => (was ? p > 0.985 : p >= 0.999));
   });
-  const parallaxEnabled = reduce !== true && !isSmall;
+  const parallaxEnabled = !reduce && !isSmall;
   const pointer = usePointerParallax(spread, parallaxEnabled);
 
-  const copyOpacity = useTransform(progress, [textFadeStart, textFadeStart + 0.35], [0, 1]);
-  const copyScale = useTransform(progress, [textFadeStart, 0.9], [0.85, 1]);
+  const copyOpacity = useTransform(progress, [TEXT_FADE_START, TEXT_FADE_START + 0.35], [0, 1]);
+  const copyScale = useTransform(progress, [TEXT_FADE_START, 0.9], [0.85, 1]);
   const hintOpacity = useTransform(progress, [0, SCATTER_START], [1, 0]);
   // latar membesar pelan mengikuti scroll
   const bgScale = useTransform(scrollYProgress, [0, 1], [1.04, 1.14]);
 
-  const shown = items.slice(0, STACK_SPREAD_MAX);
+  const shown = items.slice(0, SLOTS.length);
 
   // Foto yang sedang dibuka di PhotoSpotlight (+ posisi kartunya saat diklik)
   const [active, setActive] = useState<{ index: number; from: Rect; closing?: boolean } | null>(null);
@@ -292,13 +276,23 @@ export function StackSpread({
     <section
       ref={wrapRef}
       className={cn("relative w-full bg-ink text-warm", className)}
-      style={{ height: `${scrollLength}svh` }}
+      style={{ height: `${SCROLL_LENGTH}svh` }}
       {...props}
     >
-      <div data-stack-content className="sticky top-0 h-screen-s w-full overflow-hidden bg-ink">
+      {/* Tinggi panggung = area layar yang benar-benar terlihat (useViewportHeight; h-dvh hanya fallback sebelum JS jalan).
+          - Bukan svh: lebih pendek dari layar saat toolbar HP tersembunyi → grid naik, sisa ruang kosong di bawah.
+          - Bukan dvh: di Chrome iOS dvh tetap setinggi layar saat toolbar tersembunyi walau toolbar sedang tampil →
+            panggung lebih tinggi dari area terlihat, lepas dari sticky lebih awal, dan baris foto atas tertutup navbar
+            saat Menu mulai menimpa.
+          container-type: size → kartu & judul memakai cqw/cqh dari panggung ini. */}
+      <div
+        data-stack-content
+        className="sticky top-0 h-dvh w-full overflow-hidden bg-ink [container-type:size]"
+        style={viewportH ? { height: viewportH } : undefined}
+      >
         {backgroundImage && (
           <>
-            <motion.div aria-hidden className="absolute inset-0" style={{ scale: reduce === true ? 1.04 : bgScale }}>
+            <motion.div aria-hidden className="absolute inset-0" style={{ scale: reduce ? 1.04 : bgScale }}>
               <Image src={backgroundImage} alt="" fill loading="eager" sizes="100vw" className="object-cover filter-[sepia(0.18)_saturate(1.05)_brightness(0.92)]" />
             </motion.div>
             {/* Overlay navy gelap + sedikit hangat, lalu vignette */}
@@ -329,22 +323,14 @@ export function StackSpread({
           )}
           style={{
             opacity: copyOpacity,
-            scale: reduce === true ? 1 : copyScale,
-            // Ikut turun bersama foto (OFFSET_Y) agar tetap di tengah ruang kosong di antara foto
-            paddingTop: isSmall ? undefined : `${OFFSET_Y * 1.6}vh`,
+            scale: reduce ? 1 : copyScale,
+            // Ikut turun bersama foto (OFFSET_Y / navShift) agar tetap di tengah ruang kosong di antara foto
+            paddingTop: isSmall ? "var(--nav-h)" : `${OFFSET_Y * 1.6}cqh`,
           }}
         >
           <h2 className={cn("font-display text-[clamp(40px,4.4vw,80px)] leading-[1.02] font-semibold tracking-[-0.02em] text-warm drop-shadow-[0_4px_30px_rgba(0,0,0,0.6)] max-md:text-[clamp(34px,10vw,48px)] transition-opacity duration-700 ease-out-soft", dimmed && "opacity-0")}>
             {title}
           </h2>
-          {subtitle && (
-            <p className="mt-5 w-full max-w-[42ch] text-[clamp(15px,1.15vw,19px)] leading-relaxed text-cream/80 max-md:mt-3">
-              {subtitle}
-            </p>
-          )}
-          {body && !isSmall && (
-            <p className="mt-4 w-full max-w-[58ch] text-[clamp(14px,1vw,17px)] leading-relaxed text-cream/65">{body}</p>
-          )}
         </motion.div>
 
         {/* Foto yang menyebar */}
@@ -356,9 +342,8 @@ export function StackSpread({
               slot={SLOTS[i]}
               z={2 + i}
               progress={progress}
-              flat={reduce === true}
+              flat={reduce}
               isSmall={isSmall}
-              stackScale={stackScale}
               pointer={pointer}
               depth={parallaxEnabled ? parallaxDepth(i, shown.length) : 0}
               hidden={active?.index === i}
@@ -373,28 +358,26 @@ export function StackSpread({
         </div>
 
         {/* Petunjuk scroll */}
-        {hint && (
-          <motion.div
-            className="pointer-events-none absolute inset-x-0 bottom-[3vh] z-20 flex flex-col items-center gap-[0.6vh] text-small font-medium tracking-[0.2em] text-cream/70 uppercase"
-            style={{ opacity: hintOpacity }}
+        <motion.div
+          className="pointer-events-none absolute inset-x-0 bottom-[3vh] z-20 flex flex-col items-center gap-[0.6vh] text-small font-medium tracking-[0.2em] text-cream/70 uppercase"
+          style={{ opacity: hintOpacity }}
+        >
+          <span>{uiText.scrollHint}</span>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="animate-bob"
+            aria-hidden="true"
           >
-            <span>{hint}</span>
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="animate-bob"
-              aria-hidden="true"
-            >
-              <path d="m6 9 6 6 6-6" />
-            </svg>
-          </motion.div>
-        )}
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+        </motion.div>
       </div>
 
       {active && (
@@ -409,5 +392,3 @@ export function StackSpread({
     </section>
   );
 }
-
-export default StackSpread;

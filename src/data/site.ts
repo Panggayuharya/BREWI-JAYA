@@ -5,7 +5,7 @@ const siteSettings: SiteSettings = {
   id: 1,
   brandName: "Brewi Jaya",
   tagline: "Kopi lokal dan menu andalan untuk nongkrong.",
-  logoUrl: "/brand/logo.avif", // logo juga tersedia sebagai komponen <BrandLogo />
+  logoUrl: "/brand/logo.avif", // versi gambar; di halaman logo digambar sebagai SVG oleh <BrandLogo />
   instagramUrl: "https://instagram.com/",
   tiktokUrl: "https://tiktok.com/",
   email: "halo@brewijaya.id",
@@ -86,20 +86,12 @@ export const navLinks: NavLink[] = [
   { id: "reservasi", label: "Reservasi" },
 ];
 
-export const ribbonWords: string[] = [
-  "kopi susu gula aren",
-  "manual brew",
-  "buka sampai malam",
-  "wi-fi kencang",
-  "biji kopi lokal",
-];
-
 export const uiText = {
   brandWordmark: "BREWi JAYA",
   brandSubline: "Coffee & Eatery",
   introHint: "Scroll untuk mulai",
+  scrollHint: "Scroll",
   menuEyebrow: "Our Menu",
-  foodTitle: "Makanan",
   galleryTitle: "Suasana di Brewi",
   locationEyebrow: "Lokasi",
   locationTitle: "Mampir ke Brewi",
@@ -109,29 +101,14 @@ export const uiText = {
   newsTitle: "Kabar dari Brewi",
   newsSubtitle: "Promo, event, dan menu baru. Semua kabar terbaru dari Brewi Jaya ada di sini.",
   newsSeeAll: "Lihat semua berita",
-  newsReadMore: "Baca selengkapnya",
   newsFilterAll: "Semua",
   newsEmpty: "Belum ada berita di kategori ini.",
   newsOther: "Berita lainnya",
   newsBack: "Kembali ke News",
   menuSeeDetail: "Lihat detail menu",
-  menuSeeAll: "Lihat semua menu",
   menuBookTitle: "Buku Menu",
   menuBookHint: "Ketuk halaman, geser, atau pakai tombol panah untuk membalik halaman.",
-  menuAllTitle: "Semua Menu Brewi",
-  menuAllSubtitle: "Kopi, non-kopi, dan makanan. Pilih menu untuk melihat detail rasa, harga, dan cara pesan.",
   menuBack: "Kembali ke Beranda",
-  menuOrder: "Pesan via WhatsApp",
-  // {outlet_name} & {menu_name} diisi otomatis
-  menuOrderTemplate: "Halo {outlet_name}, saya mau pesan {menu_name}. Apakah masih tersedia?",
-  menuSeeLocation: "Lihat lokasi outlet",
-  menuFlavor: "Rasa",
-  menuCategory: "Kategori",
-  menuPrice: "Harga",
-  menuOther: "Menu lainnya",
-  badgeSignature: "Signature",
-  badgeBestSeller: "Best seller",
-  badgeNew: "Baru",
   openNow: "Buka sekarang",
   closed: "Tutup",
   closesAt: "Tutup",
@@ -146,20 +123,13 @@ export function getSiteSettings(): SiteSettings {
   return siteSettings;
 }
 
-export function getPageSections(page: PageName): PageSection[] {
-  return pageSections
-    .filter((s) => s.page === page && s.isActive)
-    .sort((a, b) => a.sortOrder - b.sortOrder);
-}
-
 export function getPageSection(page: PageName, key: string): PageSection | undefined {
-  return getPageSections(page).find((s) => s.sectionKey === key);
+  return pageSections.find((s) => s.page === page && s.sectionKey === key && s.isActive);
 }
 
 // Foto suasana asli dari pemilik (public/gallery). Tambah/ganti foto cukup di daftar ini.
 // Sebagian besar berbeda dari foto di Gallery; espresso-shot, area-indoor & ruang-meeting sengaja dipakai di keduanya.
-// Urutan mengikuti slot StackSpread: slot 1, 2, 4, 7 lebih tinggi → foto portrait.
-// `description` tampil di panel samping saat foto diklik.
+// Maksimal 8 foto (jumlah slot StackSpread). `description` tampil di panel samping saat foto diklik.
 const placePhotos: PlacePhoto[] = [
   {
     title: "Tim Brewi Jaya",
@@ -211,11 +181,8 @@ const placePhotos: PlacePhoto[] = [
   },
 ];
 
-/** Latar section Tempat. Isi `video` (mis. "/place/suasana.mp4") agar video maju-mundur mengikuti scroll. */
-export const placeBackground = {
-  image: "/gallery/booth-brewi-jaya.webp",
-  video: "", // TODO: video suasana cafe menyusul
-};
+/** Foto latar section Tempat (digelapkan di belakang foto-foto yang menyebar). */
+export const placeBackgroundImage = "/gallery/booth-brewi-jaya.webp";
 
 export function getPlacePhotos(): PlacePhoto[] {
   return placePhotos;

@@ -19,8 +19,7 @@ export function Home() {
 
   useGSAP(
     () => {
-      const mm = gsap.matchMedia();
-      mm.add(`${MQ.desktop}, ${MQ.mobile}`, () => {
+      gsap.matchMedia().add(MQ.motion, () => {
         gsap.from("[data-home-line]", { yPercent: 110, opacity: 0, stagger: 0.08, duration: 0.8, ease: "power3.out" });
 
         // Parallax saat section Tentang naik menimpa Home.

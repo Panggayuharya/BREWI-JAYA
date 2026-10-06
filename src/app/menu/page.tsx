@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { menuBookPages } from "@/data/menu";
 import { getSiteSettings, uiText } from "@/data/site";
-import { NewsBody, NewsHero } from "@/components/news/NewsHero";
+import { HeroHeading, NewsBody, NewsHero } from "@/components/news/NewsHero";
 import { MenuFlipbook } from "@/components/menu/MenuFlipbook";
 import { buttonClass } from "@/components/ui/Button";
 
@@ -27,11 +27,9 @@ function BackToHome({ variant }: { variant: "outline-light" | "outline-navy" }) 
 export default function MenuPage() {
   return (
     <>
-      <NewsHero nav="menu" className="pb-[calc(var(--radius-section)+4.5rem)]">
+      <NewsHero nav="menu">
         <BackToHome variant="outline-light" />
-        <p className="eyebrow text-accent">{uiText.menuEyebrow}</p>
-        <h1 className="font-display text-hero font-semibold tracking-[-0.02em]">{uiText.menuBookTitle}</h1>
-        <p className="max-w-xl text-subtitle leading-relaxed text-cream/75">{uiText.menuBookHint}</p>
+        <HeroHeading eyebrow={uiText.menuEyebrow} title={uiText.menuBookTitle} subtitle={uiText.menuBookHint} />
       </NewsHero>
       <NewsBody nav="menu">
         <div className="container-brewi pt-14 pb-28">

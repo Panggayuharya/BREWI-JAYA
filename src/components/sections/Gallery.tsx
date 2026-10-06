@@ -18,6 +18,10 @@ import { Reveal } from "@/components/motion/Reveal";
 
 const BASE_SPEED = 40; // px per detik
 
+/** Tombol bulat di lightbox (tutup, sebelumnya, berikutnya); posisi ditambahkan per tombol. */
+const LIGHTBOX_BTN =
+  "absolute flex size-11 items-center justify-center rounded-pill bg-warm text-ink transition-colors duration-300 hover:bg-accent";
+
 /**
  * Gallery (design.md 9): dua baris marquee berlawanan arah, bisa di-drag/swipe,
  * kecepatan & arah dipengaruhi scroll, klik foto membuka lightbox.
@@ -29,7 +33,7 @@ export function Gallery() {
   const open = (item: GalleryItem) => setLightbox(all.findIndex((g) => g.id === item.id));
 
   return (
-    // Dibungkus StackPanel di page.tsx: naik menimpa Menu Makanan dengan sudut atas membulat
+    // Dibungkus StackPanel di page.tsx: naik menimpa Menu dengan sudut atas membulat
     <section id="gallery" data-nav="gallery" data-nav-theme="light" className="relative bg-navy-soft text-warm">
       <div data-stack-content className="flex flex-col gap-4 bg-navy-soft pt-[calc(var(--nav-h)+1.5rem)] pb-20 sm:gap-6 sm:pt-[calc(var(--nav-h)+2.5rem)] sm:pb-28 lg:gap-8">
         <Reveal className="container-brewi">
@@ -171,37 +175,23 @@ function Lightbox({
           <div className="relative aspect-4/5 h-[80svh] max-w-full overflow-hidden rounded-photo" onClick={(e) => e.stopPropagation()}>
             <MediaImage src={item.mediaUrl} alt={item.caption} sizes="80vw" />
           </div>
-          <button
-            type="button"
-            autoFocus
-            aria-label="Tutup"
-            onClick={() => onChange(null)}
-            className="absolute top-4 right-4 flex size-11 items-center justify-center rounded-pill bg-warm text-ink transition-colors duration-300 hover:bg-accent"
-          >
+          <button type="button" autoFocus aria-label="Tutup" onClick={() => onChange(null)} className={`${LIGHTBOX_BTN} top-4 right-4`}>
             ✕
           </button>
-          <button
-            type="button"
-            aria-label="Foto sebelumnya"
-            onClick={(e) => {
-              e.stopPropagation();
-              step(-1);
-            }}
-            className="absolute left-4 flex size-11 items-center justify-center rounded-pill bg-warm text-ink transition-colors duration-300 hover:bg-accent"
-          >
-            ◀
-          </button>
-          <button
-            type="button"
-            aria-label="Foto berikutnya"
-            onClick={(e) => {
-              e.stopPropagation();
-              step(1);
-            }}
-            className="absolute right-4 flex size-11 items-center justify-center rounded-pill bg-warm text-ink transition-colors duration-300 hover:bg-accent"
-          >
-            ▶
-          </button>
+          {([-1, 1] as const).map((d) => (
+            <button
+              key={d}
+              type="button"
+              aria-label={d === 1 ? "Foto berikutnya" : "Foto sebelumnya"}
+              onClick={(e) => {
+                e.stopPropagation();
+                step(d);
+              }}
+              className={`${LIGHTBOX_BTN} ${d === 1 ? "right-4" : "left-4"}`}
+            >
+              {d === 1 ? "▶" : "◀"}
+            </button>
+          ))}
         </motion.div>
       )}
     </AnimatePresence>

@@ -1,6 +1,6 @@
 import type { Outlet, WhatsappContact } from "@/types";
 
-export function buildWhatsappLink(number: string, template: string, vars: Record<string, string>) {
+function buildWhatsappLink(number: string, template: string, vars: Record<string, string>) {
   const text = template.replace(/\{(\w+)\}/g, (_, key: string) => vars[key] ?? "");
   return `https://wa.me/${number}?text=${encodeURIComponent(text)}`;
 }

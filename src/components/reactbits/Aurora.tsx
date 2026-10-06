@@ -113,7 +113,7 @@ void main() {
 }
 `;
 
-export interface AuroraProps {
+interface AuroraProps {
   /** Tiga warna dari kiri → tengah → kanan */
   colorStops?: [string, string, string];
   amplitude?: number;
@@ -163,13 +163,14 @@ export function Aurora({
     const geometry = new Triangle(gl);
     if (geometry.attributes.uv) delete geometry.attributes.uv;
 
+    let stops = live.current.colorStops;
     const program = new Program(gl, {
       vertex: VERT,
       fragment: FRAG,
       uniforms: {
         uTime: { value: 0 },
         uAmplitude: { value: live.current.amplitude },
-        uColorStops: { value: live.current.colorStops.map(toRgb) },
+        uColorStops: { value: stops.map(toRgb) },
         uResolution: { value: [ctn.offsetWidth, ctn.offsetHeight] },
         uBlend: { value: live.current.blend },
       },
@@ -192,7 +193,11 @@ export function Aurora({
       program.uniforms.uTime.value = t * 0.01 * p.speed * 0.1;
       program.uniforms.uAmplitude.value = p.amplitude;
       program.uniforms.uBlend.value = p.blend;
-      program.uniforms.uColorStops.value = p.colorStops.map(toRgb);
+      // Konversi warna hanya saat colorStops berubah, bukan tiap frame
+      if (p.colorStops !== stops) {
+        stops = p.colorStops;
+        program.uniforms.uColorStops.value = stops.map(toRgb);
+      }
       renderer.render({ scene: mesh });
     };
     frame = requestAnimationFrame(update);
@@ -208,5 +213,3 @@ export function Aurora({
 
   return <div ref={ctnRef} aria-hidden className={`h-full w-full ${className}`} />;
 }
-
-export default Aurora;
