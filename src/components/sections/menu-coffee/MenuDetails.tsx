@@ -70,7 +70,7 @@ export function MenuDetails({ item, sizerItems, index, total, categoryName }: Me
       </div>
 
       {/* Harga + tombol sejajar: "Rp" kecil biru aksen, angka besar. HP: diberi jarak tambahan (--price-gap) dari panggung */}
-      <div className="mt-(--price-gap) flex flex-wrap items-center gap-x-5 gap-y-4 sm:gap-x-8">
+      <div className="mt-(--price-gap) flex flex-wrap items-center gap-x-4 gap-y-4 sm:gap-x-8">
         <p className="flex items-baseline gap-1.5 font-display font-semibold text-warm tabular-nums">
           <span className="text-[14px] font-light tracking-[0.08em] text-accent sm:text-[16px]">Rp</span>
           <PriceTicker value={item.basePrice} className="text-[26px] leading-none sm:text-price" />

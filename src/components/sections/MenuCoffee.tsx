@@ -82,9 +82,10 @@ export function MenuCoffee() {
           className="absolute rounded-full bg-[radial-gradient(circle_at_30%_45%,var(--color-warm)_0%,var(--color-cream)_48%,#dfe5ef_100%)] shadow-[0_0_120px_-30px_rgb(143_178_245/0.35)]"
           style={{
             left: "calc(var(--bx) - var(--br))",
-            top: "calc(var(--by) - var(--br))",
+            top: "calc(var(--by) - var(--bry))",
             width: "calc(var(--br) * 2)",
-            height: "calc(var(--br) * 2)",
+            // HP: elips (--bry > --br) supaya panggung mengisi tinggi layar; desktop: lingkaran
+            height: "calc(var(--bry) * 2)",
             // HP: bagian bawah lingkaran dipudarkan di batas panggung (lihat .menu-stage)
             maskImage: "var(--blob-mask)",
             WebkitMaskImage: "var(--blob-mask)",

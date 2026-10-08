@@ -129,38 +129,52 @@ html.lenis body {
      kolom teks selebar --text-w di kiri, panggung cup di kanan. --u = "1svh desktop" versi HP,
      dibatasi lebar layar supaya busur + thumbnail hanya memakai ±50% lebar layar. */
   --u: min(0.64vw, 0.32svh);
+  /* --v = satuan tinggi panggung. Lebar panggung dikunci ke --u (lebar layar) supaya kolom teks tidak tertimpa,
+     tapi layar HP jauh lebih tinggi daripada lebarnya: kalau tinggi juga memakai --u, panggung hanya ±200px dan
+     separuh bawah layar kosong. Jadi tinggi panggung boleh membesar mengikuti sisa tinggi layar (maks 1.5× --u):
+     lingkaran menjadi elips yang lebih tinggi (busur yang terlihat tetap mulus), thumbnail ikut di tepinya.
+     Pembagi 84 = tinggi panggung dalam --v; 5rem = jarak minimum antar blok yang tetap disisakan. */
+  --v: clamp(
+    var(--u),
+    (100svh - var(--nav-h) - 0.5rem - var(--head-h) - 0.75rem - 1rem - 3.25rem - 2.5rem - 5rem) / 84,
+    var(--u) * 1.5
+  );
   --head-h: 5.5rem;
   /* HP: section setinggi layar (bukan setinggi isi) supaya section Tentang tidak lagi mengintip di atasnya.
      Sisa tinggi layar (--free) dibagi ke jarak antar blok, jadi isi tidak menumpuk di atas:
      sedikit di atas eyebrow (tetap dekat navbar), lebih banyak di antara tab ↔ isi dan isi ↔ harga, sisanya di bawah.
-     --content = semua blok tetap: head + panggung (84u) + baris harga (±3.25rem) + jarak bawaan + pb-10. */
-  --content: calc(var(--head-h) + 0.75rem + var(--u) * 84 + 1rem + 3.25rem + 2.5rem);
+     --content = semua blok tetap: head + panggung (84v) + baris harga (±3.25rem) + jarak bawaan + pb-10. */
+  --content: calc(var(--head-h) + 0.75rem + var(--v) * 84 + 1rem + 3.25rem + 2.5rem);
   --free: max(0px, 100svh - var(--nav-h) - 0.5rem - var(--content));
-  --text-top: calc(var(--nav-h) + 0.5rem + min(var(--free) * 0.1, 1.5rem));
+  --text-top: calc(var(--nav-h) + 0.5rem + min(var(--free) * 0.15, 3rem));
   /* Jarak tambahan tab ↔ isi (margin bawah blok head di MenuCoffee) */
-  --row-gap: min(var(--free) * 0.2, 3rem);
+  --row-gap: min(var(--free) * 0.25, 4.5rem);
   --row-top: calc(var(--text-top) + var(--head-h) + 0.75rem + var(--row-gap));
   /* Jarak tambahan di atas baris harga + tombol */
-  --price-gap: min(var(--free) * 0.2, 3rem);
-  /* Titik acuan panggung: puncak cup & thumbnail atas ±14u di bawah --o → sejajar dengan awal kolom teks */
-  --o: calc(var(--row-top) - var(--u) * 14);
-  --cap-h: calc(var(--u) * 64);
+  --price-gap: min(var(--free) * 0.25, 4.5rem);
+  /* Titik acuan panggung: puncak cup & thumbnail atas ±14v di bawah --o → sejajar dengan awal kolom teks */
+  --o: calc(var(--row-top) - var(--v) * 14);
+  /* Cup ikut membesar bersama tinggi panggung, tapi lebarnya dibatasi (maks 1.15× ukuran dasar)
+     supaya tidak menimpa kolom teks maupun thumbnail di kiri bawah & kanan atas */
+  --cap-h: min(var(--v) * 64, var(--u) * 73.6);
   --cap-w: calc(var(--cap-h) * 31 / 54);
   --shift: 0px;
   --cap-x: calc(100vw - var(--u) * 47 - var(--cap-w) / 2 - var(--shift));
-  --cap-y: calc(var(--o) + var(--u) * 44 - var(--cap-h) * 0.46);
+  --cap-y: calc(var(--o) + var(--v) * 44 - var(--cap-h) * 0.46);
+  /* Jari-jari horizontal (--br) & vertikal (--bry): di HP elips, di desktop sama (lingkaran) */
   --br: calc(var(--u) * 82.5);
+  --bry: calc(var(--v) * 82.5);
   --bx: calc(100vw + var(--u) * 8 - var(--shift));
-  --by: calc(var(--o) + var(--u) * 104.5);
+  --by: calc(var(--o) + var(--v) * 104.5);
   /* Thumbnail sedikit lebih besar dari proporsi desktop (7.5u) supaya mudah diketuk, rasio tetap 1 : 1.5 */
   --tw: calc(var(--u) * 11);
   --th: calc(var(--tw) * 1.5);
   /* Di desktop lingkaran terpotong tepi bawah layar; di HP dipudarkan di batas bawah panggung */
-  --stage-end: calc(var(--o) + var(--u) * 98);
+  --stage-end: calc(var(--o) + var(--v) * 98);
   --blob-mask: linear-gradient(
     to bottom,
-    #000 calc(var(--stage-end) - var(--by) + var(--br) - var(--u) * 22),
-    transparent calc(var(--stage-end) - var(--by) + var(--br))
+    #000 calc(var(--stage-end) - var(--by) + var(--bry) - var(--v) * 30),
+    transparent calc(var(--stage-end) - var(--by) + var(--bry))
   );
   /* Kolom teks berhenti sebelum thumbnail paling kiri (±79u dari tepi kanan) */
   --text-w: calc(100vw - var(--u) * 80 - var(--container-pad) - 0.5rem);
@@ -181,6 +195,7 @@ html.lenis body {
     --cap-x: calc(100vw - 47svh - var(--cap-w) / 2 - var(--shift));
     --cap-y: calc(44svh - var(--cap-h) * 0.46);
     --br: 82.5svh;
+    --bry: 82.5svh;
     --bx: calc(100vw + 8svh - var(--shift));
     --by: calc(22svh + 82.5svh);
     --tw: 7.5svh;

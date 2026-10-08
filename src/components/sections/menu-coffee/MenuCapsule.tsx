@@ -52,7 +52,8 @@ function onCircle(deg: number, visible: boolean): Slot {
     visible,
     style: {
       left: `calc(var(--bx) + var(--br) * ${cos} - var(--tw) / 2)`,
-      top: `calc(var(--by) + var(--br) * ${sin} - var(--th) / 2)`,
+      // --bry: jari-jari vertikal (di HP lingkaran berupa elips, lihat .menu-stage)
+      top: `calc(var(--by) + var(--bry) * ${sin} - var(--th) / 2)`,
       width: "var(--tw)",
       height: "var(--th)",
     },
@@ -80,7 +81,7 @@ const fade = { duration: 0.6, ease: [0.4, 0, 0.2, 1] } as const;
 // Bayangan realistis untuk foto cup transparan (tanpa bingkai): dua lapis, coklat hangat (bukan hitam, supaya tidak kusam di atas ivory).
 // Lapis 1 tipis & rapat = tepi cup terasa padat; lapis 2 lebar & lembut = cup sedikit terangkat dari latar.
 const CUP_SHADOW =
-  "[filter:drop-shadow(0_3px_4px_rgb(62_42_32/0.28))_drop-shadow(0_26px_34px_rgb(62_42_32/0.32))]";
+  "filter-[drop-shadow(0_3px_4px_rgb(62_42_32/0.28))_drop-shadow(0_26px_34px_rgb(62_42_32/0.32))]";
 
 /**
  * Panggung Menu Kopi: cup utama + thumbnail. Menempati seluruh section (absolute inset-0)

@@ -279,15 +279,17 @@ export function StackSpread({ items, title, backgroundImage, className, ...props
       style={{ height: `${SCROLL_LENGTH}svh` }}
       {...props}
     >
-      {/* Tinggi panggung = area layar yang benar-benar terlihat (useViewportHeight; h-dvh hanya fallback sebelum JS jalan).
+      {/* Tinggi panggung = area layar yang benar-benar terlihat (useViewportHeight, berbasis visualViewport;
+          h-svh hanya fallback sebelum JS jalan — svh tidak pernah lebih tinggi dari layar, jadi tidak ada yang terpotong).
           - Bukan svh: lebih pendek dari layar saat toolbar HP tersembunyi → grid naik, sisa ruang kosong di bawah.
-          - Bukan dvh: di Chrome iOS dvh tetap setinggi layar saat toolbar tersembunyi walau toolbar sedang tampil →
-            panggung lebih tinggi dari area terlihat, lepas dari sticky lebih awal, dan baris foto atas tertutup navbar
-            saat Menu mulai menimpa.
+          - Bukan dvh / innerHeight: di Chrome iOS keduanya ikut menghitung area di balik toolbar bawah walau toolbar
+            sedang tampil → panggung lebih tinggi dari area terlihat. Saat section selesai (dan ditahan sementara Menu
+            menimpa), dasar panggung sejajar dasar layar sehingga kelebihannya terdorong ke atas dan baris foto atas
+            tertutup navbar.
           container-type: size → kartu & judul memakai cqw/cqh dari panggung ini. */}
       <div
         data-stack-content
-        className="sticky top-0 h-dvh w-full overflow-hidden bg-ink [container-type:size]"
+        className="sticky top-0 h-svh w-full overflow-hidden bg-ink @container-size"
         style={viewportH ? { height: viewportH } : undefined}
       >
         {backgroundImage && (
