@@ -6,7 +6,8 @@ const nextConfig: NextConfig = {
   },
   // Halaman detail per menu (/menu/[slug]) sudah dihapus; tautan lama diarahkan ke buku menu (flipbook).
   async redirects() {
-    return [{ source: "/menu/:slug", destination: "/menu", permanent: true }];
+    // Slug tanpa titik saja, supaya file gambar di public/menu/*.webp tidak ikut teralihkan.
+    return [{ source: "/menu/:slug([^./]+)", destination: "/menu", permanent: true }];
   },
 };
 
