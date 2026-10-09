@@ -15,7 +15,7 @@ const news: NewsItem[] = [
     title: "Iced Caramel Latte Resmi Hadir di Brewi",
     excerpt: "Espresso, susu segar, dan saus karamel buatan sendiri. Menu baru untuk yang suka manis tapi tetap ngopi.",
     body: [
-      "Setelah beberapa minggu diuji coba bareng pelanggan setia, Iced Caramel Latte akhirnya masuk menu tetap Brewi Jaya.",
+      "Setelah beberapa minggu diuji coba bareng pelanggan setia, Iced Caramel Latte akhirnya masuk menu tetap BREWi JAYA.",
       "Kami memakai saus karamel yang dimasak sendiri di dapur Brewi, jadi manisnya lebih lembut dan tidak menutupi rasa espresso.",
       "Sudah bisa dipesan di semua outlet mulai hari ini. Tersedia dalam versi dingin, dan bisa minta less sugar ke barista.",
     ],
@@ -47,7 +47,7 @@ const news: NewsItem[] = [
     title: "Live Acoustic Setiap Sabtu Malam",
     excerpt: "Musik akustik pelan di rooftop, mulai pukul 19.00. Datang lebih awal kalau mau dapat meja dekat panggung.",
     body: [
-      "Mulai bulan ini, rooftop Brewi Jaya diisi musik akustik setiap Sabtu malam.",
+      "Mulai bulan ini, rooftop BREWi JAYA diisi musik akustik setiap Sabtu malam.",
       "Musisi lokal tampil mulai pukul 19.00 sampai 21.30 dengan lagu-lagu santai yang pas buat ngobrol lama.",
       "Tidak ada biaya masuk. Untuk rombongan, sebaiknya reservasi meja dulu lewat WhatsApp outlet.",
     ],

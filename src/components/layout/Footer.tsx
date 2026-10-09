@@ -2,7 +2,6 @@ import { getSiteSettings, uiText } from "@/data/site";
 import { getOutlets } from "@/data/outlets";
 import { buildContactLink, getPrimaryContact } from "@/lib/whatsapp";
 import { BrandLogo } from "@/components/ui/BrandLogo";
-import { ManagedBy } from "@/components/ui/ManagedBy";
 
 /** Sosial media + WhatsApp & Google Maps outlet utama (outlet aktif pertama). */
 function getSocialLinks() {
@@ -34,7 +33,6 @@ export function Footer() {
             </span>
           </div>
           <p className="text-body text-cream/70">{site.tagline}</p>
-          <ManagedBy size="md" className="mt-4" />
         </div>
         <ul className="flex flex-wrap gap-2">
           {getSocialLinks().map((s) => (

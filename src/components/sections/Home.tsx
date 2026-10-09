@@ -6,7 +6,6 @@ import { getPageSection, heroBackdrop } from "@/data/site";
 import { useScrollTo } from "@/components/motion/SmoothScrollProvider";
 import { Button } from "@/components/ui/Button";
 import { Magnet } from "@/components/ui/Magnet";
-import { ManagedBy } from "@/components/ui/ManagedBy";
 
 /**
  * Home (design.md 5): nama brand + deskripsi di tengah layar, di atas foto latar.
@@ -140,7 +139,8 @@ export function Home() {
           aria-hidden
           className="absolute bottom-[-45vw] left-1/2 size-[130vw] -translate-x-1/2 rounded-full bg-linear-to-t from-navy-soft to-deep/40 lg:hidden"
         />
-        <div className="container-brewi relative flex min-h-screen-s items-center justify-center pt-[calc(var(--nav-h)+1rem)] pb-12">
+        {/* pt lebih besar dari pb: blok teks sengaja turun supaya judul "BREWi JAYA" pas di tengah layar */}
+        <div className="container-brewi relative flex min-h-screen-s items-center justify-center pt-[calc(var(--nav-h)+8rem)] pb-12 lg:pt-[calc(var(--nav-h)+5.5rem)]">
           {/* Nama brand + deskripsi, rata tengah */}
           <div data-home-text className="relative z-10 flex w-full flex-col items-center gap-6 text-center">
             <p className="overflow-hidden">
@@ -175,8 +175,6 @@ export function Home() {
                 </Magnet>
               </div>
             )}
-            {/* Tulisan "Managed by" di atas, logo UB Coffee di bawahnya */}
-            <ManagedBy className="mt-4 flex-col justify-center pt-6 text-cream" />
           </div>
         </div>
       </div>

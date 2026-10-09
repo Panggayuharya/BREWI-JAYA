@@ -68,10 +68,10 @@ const items: MenuItem[] = [
 
 /** Halaman buku menu cetak (flipbook di halaman menu). File di public/menu-book, rasio A4 mendatar. */
 export const menuBookPages: { src: string; alt: string }[] = [
-  { src: "/menu-book/beverage.webp", alt: "Buku menu Brewi Jaya: Beverage" },
-  { src: "/menu-book/food.webp", alt: "Buku menu Brewi Jaya: Food" },
-  { src: "/menu-book/menu-1.webp", alt: "Buku menu Brewi Jaya: Menu lengkap" },
-  { src: "/menu-book/menu-2.webp", alt: "Buku menu Brewi Jaya: Menu lengkap (varian)" },
+  { src: "/menu-book/beverage.webp", alt: "Buku menu BREWi JAYA: Beverage" },
+  { src: "/menu-book/food.webp", alt: "Buku menu BREWi JAYA: Food" },
+  { src: "/menu-book/menu-1.webp", alt: "Buku menu BREWi JAYA: Menu lengkap" },
+  { src: "/menu-book/menu-2.webp", alt: "Buku menu BREWi JAYA: Menu lengkap (varian)" },
 ];
 
 export function getMenuCategories(): MenuCategory[] {

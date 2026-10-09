@@ -1,6 +1,6 @@
 import type { OpeningHour, Outlet, WhatsappContact } from "@/types";
 
-const reservationTemplate = `Halo {contact_name}, saya mau reservasi di Brewi Jaya {outlet_name} 👋
+const reservationTemplate = `Halo {contact_name}, saya mau reservasi di {outlet_name} 👋
 Nama:
 Tanggal:
 Jam:
@@ -37,7 +37,7 @@ function contact(id: number, outletId: number, name: string, number: string): Wh
 const outlets: Outlet[] = [
   {
     id: 1,
-    name: "Brewi Jaya Transmart",
+    name: "BREWi JAYA Transmart",
     slug: "transmart",
     address: "Transmart, Jl. Veteran, Ketawanggede, Kec. Klojen",
     city: "Kota Malang",
@@ -51,7 +51,7 @@ const outlets: Outlet[] = [
   },
   {
     id: 2,
-    name: "Brewi Jaya Express FIB",
+    name: "BREWi JAYA Express FIB",
     slug: "express-fib",
     address: "FIB Universitas Brawijaya, Ketawanggede, Kec. Lowokwaru",
     city: "Kota Malang",
@@ -65,7 +65,7 @@ const outlets: Outlet[] = [
   },
   {
     id: 3,
-    name: "Brewi Jaya Rest Area KM 66 A",
+    name: "BREWi JAYA Rest Area KM 66 A",
     slug: "rest-area-km-66a",
     address: "Rest Area KM 66 A, Sumbersuko, Kec. Pandaan",
     city: "Kabupaten Pasuruan",
@@ -80,7 +80,7 @@ const outlets: Outlet[] = [
   // TODO: konfirmasi jam buka outlet IKN & Jakarta (belum tercantum di Google Maps)
   {
     id: 4,
-    name: "Brewi Jaya IKN",
+    name: "BREWi JAYA IKN",
     slug: "ikn",
     address: "Rusun ASN 3 Tower 2, Nusantara",
     city: "Kabupaten Penajam Paser Utara",
@@ -94,7 +94,7 @@ const outlets: Outlet[] = [
   },
   {
     id: 5,
-    name: "Brewi Jaya Jagorawi",
+    name: "BREWi JAYA Jagorawi",
     slug: "jagorawi",
     address: "Tol Jagorawi, Pinang Ranti, Kec. Makasar",
     city: "Jakarta Timur",

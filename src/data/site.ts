@@ -3,7 +3,7 @@ import type { NavLink, PageName, PageSection, PlacePhoto, SiteSettings } from "@
 // TODO: ganti data asli (logo final, link sosial media, email)
 const siteSettings: SiteSettings = {
   id: 1,
-  brandName: "Brewi Jaya",
+  brandName: "BREWi JAYA",
   tagline: "Kopi lokal dan menu andalan untuk nongkrong.",
   logoUrl: "/brand/logo.avif", // versi gambar; di halaman logo digambar sebagai SVG oleh <BrandLogo />
   instagramUrl: "https://instagram.com/",
@@ -67,15 +67,6 @@ export const heroBackdrop = {
   right: "/place/hero-barista.webp",
 };
 
-/** Brewi Jaya dikelola oleh UB Coffee (logo di public/brand/ub-coffee.webp). */
-export const managedBy = {
-  label: "Managed by",
-  name: "UB Coffee",
-  logoUrl: "/brand/ub-coffee.webp",
-  logoWidth: 400,
-  logoHeight: 218,
-};
-
 export const navLinks: NavLink[] = [
   { id: "home", label: "Home" },
   { id: "tentang", label: "Tentang" },
@@ -94,12 +85,12 @@ export const uiText = {
   menuEyebrow: "Our Menu",
   galleryTitle: "Suasana di Brewi",
   locationEyebrow: "Lokasi",
-  locationTitle: "Mampir ke Brewi",
+  locationTitle: "LOKASI BREWI",
   openingHours: "Jam buka",
   everyDay: "Setiap hari",
   newsEyebrow: "News",
   newsTitle: "Kabar dari Brewi",
-  newsSubtitle: "Promo, event, dan menu baru. Semua kabar terbaru dari Brewi Jaya ada di sini.",
+  newsSubtitle: "Promo, event, dan menu baru. Semua kabar terbaru dari BREWi JAYA ada di sini.",
   newsSeeAll: "Lihat semua berita",
   newsFilterAll: "Semua",
   newsEmpty: "Belum ada berita di kategori ini.",
@@ -132,10 +123,10 @@ export function getPageSection(page: PageName, key: string): PageSection | undef
 // Maksimal 8 foto (jumlah slot StackSpread). `description` tampil di panel samping saat foto diklik.
 const placePhotos: PlacePhoto[] = [
   {
-    title: "Tim Brewi Jaya",
+    title: "Tim BREWi JAYA",
     imageUrl: "/gallery/tim-brewi.webp",
     description:
-      "Orang-orang di balik bar. Barista dan kru Brewi Jaya yang menyeduh tiap cangkir, hafal pesanan langganan, dan selalu siap ngobrol soal biji kopi.",
+      "Orang-orang di balik bar. Barista dan kru BREWi JAYA yang menyeduh tiap cangkir, hafal pesanan langganan, dan selalu siap ngobrol soal biji kopi.",
   },
   {
     title: "Satu Shot, Penuh Rasa",

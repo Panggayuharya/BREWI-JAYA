@@ -14,10 +14,10 @@ const photos: { src: string; caption: string; category: GalleryCategory; row: Ro
   { src: "/gallery/barista-di-bar.webp", caption: "Di balik bar", category: "kopi", row: "top" },
   { src: "/place/barista-interior.webp", caption: "Barista & ruang dalam", category: "kopi", row: "bottom" },
   { src: "/place/area-rooftop.webp", caption: "Rooftop dengan pemandangan", category: "interior", row: "bottom" },
-  { src: "/gallery/peresmian.webp", caption: "Peresmian Brewi Jaya", category: "event", row: "bottom" },
+  { src: "/gallery/peresmian.webp", caption: "Peresmian BREWi JAYA", category: "event", row: "bottom" },
   { src: "/place/ruang-meeting.webp", caption: "Ngobrol lama di meja panjang", category: "customer", row: "bottom" },
   { src: "/place/pemandangan-sawah.webp", caption: "Pemandangan sawah & kereta lewat", category: "event", row: "bottom" },
-  { src: "/place/tampak-depan.webp", caption: "Tampak depan Brewi Jaya", category: "event", row: "bottom" },
+  { src: "/place/tampak-depan.webp", caption: "Tampak depan BREWi JAYA", category: "event", row: "bottom" },
 ];
 
 const items: (GalleryItem & { row: Row })[] = photos.map((p, i) => ({
