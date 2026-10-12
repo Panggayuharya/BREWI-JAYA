@@ -1,5 +1,5 @@
 "use client";
-import type { CSSProperties } from "react";
+import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { motion } from "motion/react";
 import type { MenuItem } from "@/types";
 import { MediaImage } from "@/components/ui/MediaImage";
@@ -73,6 +73,25 @@ const CURRENT_STYLE: CSSProperties = {
   height: "var(--cap-h)",
 };
 
+type Box = { x: number; y: number; w: number; h: number };
+/** Ukuran px cup utama & tiap slot (hasil ukur penanda tak terlihat), supaya cup cukup dipindah lewat transform. */
+type Geometry = { current: Box; slots: Record<number, Box> };
+const SLOT_KEYS = Object.keys(ANGLES).map(Number);
+
+/**
+ * Posisi cup sebagai transform. Semua cup dirender seukuran cup utama lalu digeser + diskalakan seragam (rasio cup
+ * tidak berubah) ke tengah slotnya. Hanya transform & opacity yang dianimasikan → dikerjakan GPU tanpa menghitung
+ * ulang tata letak tiap frame, dan foto tetap tajam karena selalu digambar pada ukuran cup utama.
+ */
+function placeIn(box: Box, cap: Box) {
+  const scale = Math.min(box.w / cap.w, box.h / cap.h);
+  return { x: box.x + (box.w - cap.w * scale) / 2, y: box.y + (box.h - cap.h * scale) / 2, scale };
+}
+
+function readBox(el: HTMLElement | null): Box {
+  return el ? { x: el.offsetLeft, y: el.offsetTop, w: el.offsetWidth, h: el.offsetHeight } : { x: 0, y: 0, w: 1, h: 1 };
+}
+
 // Pegas tanpa pantulan (bounce 0) dengan durasi visual tetap: gerak putaran mengalir halus, tidak memantul,
 // dan selesai jauh sebelum putaran berikutnya (2,5 detik).
 const spring = { type: "spring", visualDuration: 0.9, bounce: 0 } as const;
@@ -91,19 +110,52 @@ export function MenuCapsule({ items, step, onSelect }: MenuCapsuleProps) {
   const n = items.length;
   const active = ((step % n) + n) % n;
 
+  // Ukur slot dari penanda CSS (geometri tetap satu sumber di .menu-stage); ukur ulang saat ukuran layar berubah
+  const rootRef = useRef<HTMLDivElement>(null);
+  const capRef = useRef<HTMLSpanElement>(null);
+  const slotRefs = useRef<Record<number, HTMLSpanElement | null>>({});
+  const [geo, setGeo] = useState<Geometry | null>(null);
+  useLayoutEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const measure = () =>
+      setGeo({
+        current: readBox(capRef.current),
+        slots: Object.fromEntries(SLOT_KEYS.map((k) => [k, readBox(slotRefs.current[k])])),
+      });
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(root);
+    return () => ro.disconnect();
+  }, []);
+
   return (
     <motion.div
+      ref={rootRef}
       onPanEnd={(_, info) => {
         if (info.offset.x < -50) onSelect((active + 1) % n);
         if (info.offset.x > 50) onSelect((active - 1 + n) % n);
       }}
       className="absolute inset-0 z-10 touch-pan-y"
     >
+      {/* Penanda tak terlihat: posisi & ukuran cup utama dan tiap slot, hanya untuk diukur */}
+      <span ref={capRef} aria-hidden className="pointer-events-none invisible absolute" style={CURRENT_STYLE} />
+      {SLOT_KEYS.map((k) => (
+        <span
+          key={k}
+          ref={(el) => {
+            slotRefs.current[k] = el;
+          }}
+          aria-hidden
+          className="pointer-events-none invisible absolute"
+          style={SLOTS[k].style}
+        />
+      ))}
       {/* Cahaya biru aksen di belakang cup aktif + bayangan di "lantai" (dua lapis: bayangan lebar yang lembut
           dan bayangan kontak yang gelap tepat di dasar cup, seperti cup yang benar-benar berdiri di permukaan) */}
       <span
         aria-hidden
-        className="pointer-events-none absolute rounded-full bg-[radial-gradient(circle,rgb(143_178_245/0.26)_0%,transparent_65%)]"
+        className="pointer-events-none absolute rounded-full bg-[radial-gradient(circle,rgb(124_198_255/0.26)_0%,transparent_65%)]"
         style={{
           left: "calc(var(--cap-x) - var(--cap-w) * 0.3)",
           top: "calc(var(--cap-y) + var(--cap-h) * 0.05)",
@@ -132,81 +184,93 @@ export function MenuCapsule({ items, step, onSelect }: MenuCapsuleProps) {
         }}
       />
 
-      {items.map((item, i) => {
-        const offset = circularOffset(i, active, n);
-        // "lap" berubah saat item memutar dari ujung bawah ke ujung atas (offset -3 → n-4);
-        // key baru → elemen muncul pelan di slot barunya, tidak terbang melintasi layar. Elemen lama dilepas
-        // tanpa animasi keluar, tapi saat itu ia sudah tersembunyi di slot -3 jadi tidak terlihat hilang mendadak.
-        // (Sengaja tanpa AnimatePresence: membuat animasi layout semua cup jauh lebih berat / patah-patah.)
-        const lap = (offset - i + step) / n;
-        const isCurrent = offset === 0;
-        const slot = SLOTS[offset] ?? HIDDEN_SLOT;
-        const hidden = !isCurrent && !slot.visible;
-        const style = isCurrent ? CURRENT_STYLE : slot.style;
-        // Foto transparan tampil tanpa bingkai; foto biasa (tanpa cutout) tetap dalam bingkai bulat.
-        // Belum ada foto (mis. makanan) → kapsul navy bergaris biru aksen tipis, tanpa bingkai putih yang mencolok.
-        const framed = !item.imageCutoutUrl;
-        const hasPhoto = Boolean(item.imageCutoutUrl || item.imageUrl);
-
-        return (
-          <motion.button
-            key={`${item.id}-${lap}`}
-            type="button"
-            layout
-            initial={{ opacity: 0 }}
-            transition={{ ...spring, opacity: fade }}
-            // Klik thumbnail = pilih menu itu; klik cup utama = lanjut ke menu berikutnya
-            onClick={() => onSelect(isCurrent ? (active + 1) % n : i)}
-            tabIndex={hidden ? -1 : 0}
-            aria-hidden={hidden}
-            aria-label={isCurrent ? `${item.name} — menu berikutnya` : `Lihat ${item.name}`}
-            animate={{ opacity: hidden ? 0 : isCurrent ? 1 : 0.9 }}
-            whileHover={isCurrent || hidden ? undefined : { opacity: 1, scale: 1.08 }}
-            style={{ ...style, ...(framed ? { borderRadius: 9999 } : {}), zIndex: isCurrent ? 20 : 10 }}
-            className={`absolute cursor-pointer ${
-              framed
-                ? hasPhoto
-                  ? `overflow-hidden bg-warm shadow-[0_14px_30px_-14px_rgb(0_0_0/0.7)] ring-1 ring-accent/40 ${isCurrent ? "p-1.5" : "p-1"}`
-                  : "overflow-hidden bg-deep shadow-[0_14px_30px_-14px_rgb(0_0_0/0.7)] ring-1 ring-accent/35"
-                : ""
-            } ${hidden ? "pointer-events-none" : ""}`}
-          >
-            {/* Alas 3D: cup berdiri di atasnya, bagian atas cup keluar bingkai.
-                Memudar saat cup ini menjadi cup utama. */}
-            {!framed && (
-              <motion.span
-                aria-hidden
-                initial={false}
-                animate={{ opacity: isCurrent ? 0 : 1 }}
-                transition={fade}
-                className="pointer-events-none absolute inset-x-[-10%] top-[32%] bottom-[-6%] origin-bottom perspective-[260px]"
-              >
-                <span className="absolute inset-0 rounded-inner border border-accent/25 bg-[radial-gradient(ellipse_at_50%_100%,rgb(143_178_245/0.32)_0%,transparent_70%),linear-gradient(180deg,var(--color-navy-soft),var(--color-deep))] shadow-[inset_0_1px_0_rgb(243_245_249/0.14),0_16px_24px_-12px_rgb(7_19_49/0.45)] transform-[rotateX(6deg)]" />
-                {/* Bayangan di dasar cup */}
-                <span className="absolute inset-x-[22%] bottom-[7%] h-[7%] rounded-[50%] bg-black/45 blur-[3px]" />
-              </motion.span>
-            )}
-            <motion.span
-              layout
-              transition={spring}
-              style={framed ? { borderRadius: 9999 } : undefined}
-              // will-change: foto + drop-shadow-nya jadi layer GPU sendiri, jadi bayangan tidak digambar ulang
-              // di setiap frame animasi (tanpa ini transisi cup terasa patah-patah)
-              className={`relative block h-full w-full will-change-transform ${framed ? "overflow-hidden" : ""}`}
+      {geo &&
+        items.map((item, i) => {
+          const offset = circularOffset(i, active, n);
+          // "lap" berubah saat item memutar dari ujung bawah ke ujung atas (offset -3 → n-4);
+          // key baru → elemen muncul pelan di slot barunya, tidak terbang melintasi layar. Elemen lama dilepas
+          // tanpa animasi keluar, tapi saat itu ia sudah tersembunyi di slot -3 jadi tidak terlihat hilang mendadak.
+          const lap = (offset - i + step) / n;
+          const isCurrent = offset === 0;
+          const slot = SLOTS[offset] ?? HIDDEN_SLOT;
+          const hidden = !isCurrent && !slot.visible;
+          const place = placeIn(isCurrent ? geo.current : (geo.slots[offset] ?? geo.slots[4]), geo.current);
+          // Foto transparan tampil tanpa bingkai; foto biasa (tanpa cutout) tetap dalam bingkai bulat.
+          // Belum ada foto (mis. makanan) → kapsul navy bergaris biru aksen tipis, tanpa bingkai putih yang mencolok.
+          const framed = !item.imageCutoutUrl;
+          const hasPhoto = Boolean(item.imageCutoutUrl || item.imageUrl);
+  
+          return (
+            <motion.button
+              key={`${item.id}-${lap}`}
+              type="button"
+              initial={{ ...place, opacity: 0 }}
+              animate={{ ...place, opacity: hidden ? 0 : isCurrent ? 1 : 0.9 }}
+              transition={{ ...spring, opacity: fade }}
+              whileHover={isCurrent || hidden ? undefined : "hover"}
+              // Klik thumbnail = pilih menu itu; klik cup utama = lanjut ke menu berikutnya
+              onClick={() => onSelect(isCurrent ? (active + 1) % n : i)}
+              tabIndex={hidden ? -1 : 0}
+              aria-hidden={hidden}
+              aria-label={isCurrent ? `${item.name} — menu berikutnya` : `Lihat ${item.name}`}
+              style={{
+                left: 0,
+                top: 0,
+                width: geo.current.w,
+                height: geo.current.h,
+                originX: 0,
+                originY: 0,
+                zIndex: isCurrent ? 20 : 10,
+              }}
+              className={`absolute cursor-pointer will-change-transform ${hidden ? "pointer-events-none" : ""}`}
             >
-              <MediaImage
-                src={item.imageCutoutUrl ?? item.imageUrl}
-                alt={isCurrent ? item.name : ""}
-                // Ukuran sama untuk cup utama & thumbnail: saat thumbnail jadi cup utama gambarnya tidak dimuat ulang (tanpa kedip)
-                sizes="(min-width: 1024px) 360px, 40vw"
-                label={isCurrent ? undefined : " "}
-                fit={framed ? "cover" : "contain"}
-                className={framed ? "" : CUP_SHADOW}
-              />
-            </motion.span>
-          </motion.button>
-        );
-      })}
+              <motion.span
+                variants={{ hover: { scale: 1.08 } }}
+                transition={fade}
+                style={framed ? { borderRadius: 9999 } : undefined}
+                className={`relative block h-full w-full ${
+                  framed
+                    ? hasPhoto
+                      ? "overflow-hidden bg-warm p-1.5 shadow-[0_14px_30px_-14px_rgb(0_0_0/0.7)] ring-1 ring-accent/40"
+                      : "overflow-hidden bg-deep shadow-[0_14px_30px_-14px_rgb(0_0_0/0.7)] ring-1 ring-accent/35"
+                    : ""
+                }`}
+              >
+                {/* Alas 3D: cup berdiri di atasnya, bagian atas cup keluar bingkai. Memudar saat cup ini menjadi cup utama.
+                    inset-x lebih lebar karena cup diskalakan seragam (lebih ramping dari kotak slot thumbnail). */}
+                {!framed && (
+                  <motion.span
+                    aria-hidden
+                    initial={false}
+                    animate={{ opacity: isCurrent ? 0 : 1 }}
+                    transition={fade}
+                    className="pointer-events-none absolute inset-x-[-19%] top-[32%] bottom-[-6%] origin-bottom perspective-[260px]"
+                  >
+                    <span className="absolute inset-0 rounded-inner border border-accent/25 bg-[radial-gradient(ellipse_at_50%_100%,rgb(124_198_255/0.32)_0%,transparent_70%),linear-gradient(180deg,var(--color-navy-soft),var(--color-deep))] shadow-[inset_0_1px_0_rgb(245_249_255/0.14),0_16px_24px_-12px_rgb(6_26_70/0.45)] transform-[rotateX(6deg)]" />
+                    {/* Bayangan di dasar cup */}
+                    <span className="absolute inset-x-[22%] bottom-[7%] h-[7%] rounded-[50%] bg-black/45 blur-[3px]" />
+                  </motion.span>
+                )}
+                <span
+                  style={framed ? { borderRadius: 9999 } : undefined}
+                  className={`relative block h-full w-full ${framed ? "overflow-hidden" : ""}`}
+                >
+                  <MediaImage
+                    src={item.imageCutoutUrl ?? item.imageUrl}
+                    alt={isCurrent ? item.name : ""}
+                    // Ukuran sama untuk cup utama & thumbnail: saat thumbnail jadi cup utama gambarnya tidak dimuat ulang (tanpa kedip)
+                    sizes="(min-width: 1024px) 360px, 40vw"
+                    // eager: cup yang muncul dari slot tersembunyi sudah termuat, tidak "pop" belakangan
+                    loading="eager"
+                    label={isCurrent ? undefined : " "}
+                    fit={framed ? "cover" : "contain"}
+                    className={framed ? "" : CUP_SHADOW}
+                  />
+                </span>
+              </motion.span>
+            </motion.button>
+          );
+        })}
     </motion.div>
   );
 }

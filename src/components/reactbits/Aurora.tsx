@@ -128,7 +128,7 @@ const toRgb = (hex: string) => {
 };
 
 export function Aurora({
-  colorStops = ["#8FB2F5", "#F3F5F9", "#8FB2F5"],
+  colorStops = ["#7CC6FF", "#F5F9FF", "#7CC6FF"],
   amplitude = 1.0,
   blend = 0.5,
   speed = 1.0,

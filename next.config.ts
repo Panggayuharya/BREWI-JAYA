@@ -9,9 +9,8 @@ const nextConfig: NextConfig = {
     // Slug tanpa titik saja, supaya file gambar di public/menu/*.webp tidak ikut teralihkan.
     return [
       { source: "/menu/:slug([^./]+)", destination: "/menu", permanent: true },
-      // Halaman News terpisah sudah dihapus; berita cukup di section News pada halaman utama.
-      { source: "/news", destination: "/#news", permanent: true },
-      { source: "/news/:slug([^./]+)", destination: "/#news", permanent: true },
+      // Tidak ada halaman daftar News; daftar berita ada di section News pada halaman utama.
+      { source: "/news", destination: "/#news", permanent: false },
     ];
   },
 };

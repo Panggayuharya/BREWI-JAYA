@@ -19,7 +19,7 @@ interface MediaImageProps {
 
 const placeholderTones = {
   dark: "bg-linear-to-br from-deep to-navy-soft text-cream/50",
-  light: "bg-[radial-gradient(ellipse_at_50%_120%,rgb(143_178_245/0.22),transparent_70%),var(--color-cream)] text-coffee/55",
+  light: "bg-[radial-gradient(ellipse_at_50%_120%,rgb(124_198_255/0.22),transparent_70%),var(--color-cream)] text-coffee/55",
 } as const;
 
 /**

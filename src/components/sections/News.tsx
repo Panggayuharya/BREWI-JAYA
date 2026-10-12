@@ -1,20 +1,15 @@
-"use client";
-import { useState } from "react";
-import type { NewsItem } from "@/types";
 import { getLatestNews } from "@/data/news";
 import { uiText } from "@/data/site";
 import { Reveal } from "@/components/motion/Reveal";
 import { NewsCard } from "@/components/news/NewsCard";
-import { NewsDialog } from "@/components/news/NewsDialog";
 
 /**
- * News di landing page: 3 pengumuman terbaru (1 besar + 2 kecil). Tidak ada halaman News terpisah:
- * kartu diklik → isi lengkap tampil di NewsDialog.
+ * News di landing page: 3 pengumuman terbaru (1 besar + 2 kecil). Kartu diklik → halaman
+ * detail berita (/news/[slug]).
  * Dibungkus StackPanel (pinPrevious) di page.tsx: Galeri ditahan, News naik menimpanya.
  */
 export function News() {
   const [featured, ...rest] = getLatestNews(3);
-  const [open, setOpen] = useState<NewsItem | null>(null);
   if (!featured) return null;
 
   return (
@@ -31,17 +26,16 @@ export function News() {
           {/* HP: 1 kartu utama + 2 baris ringkas (foto kecil di kiri) supaya bagian ini tidak terlalu panjang */}
           <ul className="grid grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2 md:gap-y-12 lg:grid-cols-12 lg:gap-x-8">
             <li className="mb-3 md:col-span-2 md:mb-0 lg:col-span-6">
-              <NewsCard item={featured} featured sizes="(min-width: 1024px) 600px, 100vw" onOpen={setOpen} />
+              <NewsCard item={featured} featured sizes="(min-width: 1024px) 600px, 100vw" />
             </li>
             {rest.map((item) => (
               <li key={item.id} className="lg:col-span-3">
-                <NewsCard item={item} compact sizes="(min-width: 1024px) 300px, (min-width: 768px) 50vw, 100vw" onOpen={setOpen} />
+                <NewsCard item={item} compact sizes="(min-width: 1024px) 300px, (min-width: 768px) 50vw, 100vw" />
               </li>
             ))}
           </ul>
         </div>
       </div>
-      <NewsDialog item={open} onClose={() => setOpen(null)} />
     </section>
   );
 }

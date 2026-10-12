@@ -12,7 +12,7 @@ const base =
 
 const variants: Record<Variant, string> = {
   primary:
-    "border border-accent/50 bg-ink text-warm hover:border-accent hover:bg-accent hover:text-ink hover:shadow-[0_10px_24px_-12px_rgb(143_178_245/0.7)]",
+    "border border-accent/50 bg-ink text-warm hover:border-accent hover:bg-accent hover:text-ink hover:shadow-[0_10px_24px_-12px_rgb(124_198_255/0.7)]",
   "outline-light": "border border-accent/60 text-warm hover:border-accent hover:bg-accent hover:text-ink",
   "outline-navy": "border border-ink/70 text-ink hover:border-accent hover:bg-accent hover:text-ink",
 };

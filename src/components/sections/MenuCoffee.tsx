@@ -79,7 +79,7 @@ export function MenuCoffee() {
         <div
           data-menu-blob
           aria-hidden
-          className="absolute rounded-full bg-[radial-gradient(circle_at_30%_45%,var(--color-warm)_0%,var(--color-cream)_48%,#dfe5ef_100%)] shadow-[0_0_120px_-30px_rgb(143_178_245/0.35)]"
+          className="absolute rounded-full bg-[radial-gradient(circle_at_30%_45%,var(--color-warm)_0%,var(--color-cream)_48%,#dfe5ef_100%)] shadow-[0_0_120px_-30px_rgb(124_198_255/0.35)]"
           style={{
             left: "calc(var(--bx) - var(--br))",
             top: "calc(var(--by) - var(--bry))",

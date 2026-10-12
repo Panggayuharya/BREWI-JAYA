@@ -4,20 +4,20 @@
 @custom-variant tab-land (@media (min-width: 768px) and (max-width: 1023px) and (orientation: landscape) and (min-height: 600px));
 
 /*
- * Palet "Deep Navy × Biru Muda × Ivory × Warm Brown", lalu durasi & ukuran tata letak.
+ * Palet "Navy Cerah × Biru Langit × Ivory × Warm Brown", lalu durasi & ukuran tata letak.
  * Navy = identitas brand, cream = jeda visual, biru muda = aksen, coffee = elemen kopi.
  */
 :root {
-  --navy-deep: #071331;
-  --navy: #0b1d4d;
-  --navy-soft: #132d63;
-  --cream: #f3f5f9; /* putih kebiruan tipis: satu keluarga dengan logo biru-putih */
+  --navy-deep: #061a46;
+  --navy: #0d2b6e;
+  --navy-soft: #1b4596;
+  --cream: #f5f9ff; /* putih kebiruan tipis: satu keluarga dengan logo biru-putih */
   --white-warm: #ffffff;
-  --accent: #8fb2f5; /* biru muda: satu keluarga dengan logo biru-putih */
-  --accent-deep: #2f5fc4; /* biru aksen untuk TEKS di latar terang (biru muda terlalu pucat di atas putih/cream) */
+  --accent: #7cc6ff; /* biru muda: satu keluarga dengan logo biru-putih */
+  --accent-deep: #1f6fd6; /* biru aksen untuk TEKS di latar terang (biru muda terlalu pucat di atas putih/cream) */
   --coffee: #6f4a2d;
   --coffee-dark: #3e2a20;
-  --text-muted: #b8c0d2;
+  --text-muted: #c5d3ea;
 
   --dur-base: 400ms;
   --container-pad: clamp(20px, 5vw, 72px);
@@ -64,10 +64,10 @@
   --radius-photo: 16px;
   --radius-inner: 12px;
 
-  --shadow-lift: 0 -18px 50px -30px rgba(7, 19, 49, 0.45);
+  --shadow-lift: 0 -18px 50px -30px rgba(6, 26, 70, 0.45);
   /* Kartu di latar cream: bayangan coklat tipis, bukan hitam pekat */
-  --shadow-soft: 0 1px 2px rgba(7, 19, 49, 0.05), 0 14px 34px -18px rgba(7, 19, 49, 0.18);
-  --shadow-raised: 0 2px 4px rgba(7, 19, 49, 0.05), 0 24px 48px -20px rgba(7, 19, 49, 0.26);
+  --shadow-soft: 0 1px 2px rgba(6, 26, 70, 0.05), 0 14px 34px -18px rgba(6, 26, 70, 0.18);
+  --shadow-raised: 0 2px 4px rgba(6, 26, 70, 0.05), 0 24px 48px -20px rgba(6, 26, 70, 0.26);
 
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1); /* sama dengan EASE_OUT_SOFT di src/lib/easing.ts */
   --ease-inout-soft: cubic-bezier(0.65, 0, 0.35, 1);
@@ -291,7 +291,7 @@ html.lenis body {
 /* Bayangan bawaan logo (0 30px 80px hitam + pendar biru aksen) → pendar hangat lebih terang di tengah lintasan kilau */
 @keyframes logo-glow {
   0%, 40%, 100% {
-    box-shadow: 0 30px 80px -20px rgb(0 0 0 / 0.6), 0 0 70px rgb(143 178 245 / 0.14);
+    box-shadow: 0 30px 80px -20px rgb(0 0 0 / 0.6), 0 0 70px rgb(124 198 255 / 0.14);
   }
   18% {
     box-shadow: 0 30px 80px -20px rgb(0 0 0 / 0.6), 0 0 110px 10px rgb(255 226 170 / 0.4);
@@ -361,14 +361,14 @@ html.lenis body {
   .jelly-nav[data-tone="dark"] {
     --jn-active-bg: var(--color-accent);
     --jn-active-text: var(--color-ink);
-    --jn-hover: rgb(243 245 249 / 0.1);
+    --jn-hover: rgb(245 249 255 / 0.1);
     --jn-rim: rgb(255 253 248 / 0.35);
   }
   .jelly-nav[data-tone="light"] {
     --jn-active-bg: var(--color-ink);
     --jn-active-text: var(--color-warm);
-    --jn-hover: rgb(7 19 49 / 0.07);
-    --jn-rim: rgb(143 178 245 / 0.45);
+    --jn-hover: rgb(6 26 70 / 0.07);
+    --jn-rim: rgb(124 198 255 / 0.45);
   }
   .jelly-nav__skin {
     display: inline-flex;
@@ -401,7 +401,7 @@ html.lenis body {
     opacity: 1;
     box-shadow:
       inset 0 1px 0 var(--jn-rim),
-      0 8px 20px -10px rgb(7 19 49 / 0.55);
+      0 8px 20px -10px rgb(6 26 70 / 0.55);
   }
 
   /*
@@ -419,16 +419,16 @@ html.lenis body {
     user-select: none;
   }
   .jelly-tabs[data-surface="dark"] {
-    --jt-bg: rgb(243 245 249 / 0.05);
-    --jt-border: rgb(243 245 249 / 0.15);
-    --jt-text: rgb(243 245 249 / 0.72);
-    --jt-on-bg: rgb(143 178 245 / 0.15);
-    --jt-on-border: rgb(143 178 245 / 0.7);
+    --jt-bg: rgb(245 249 255 / 0.05);
+    --jt-border: rgb(245 249 255 / 0.15);
+    --jt-text: rgb(245 249 255 / 0.72);
+    --jt-on-bg: rgb(124 198 255 / 0.15);
+    --jt-on-border: rgb(124 198 255 / 0.7);
     --jt-on-text: var(--color-accent);
   }
   .jelly-tabs[data-surface="light"] {
     --jt-bg: var(--color-warm);
-    --jt-border: rgb(7 19 49 / 0.15);
+    --jt-border: rgb(6 26 70 / 0.15);
     --jt-text: var(--color-ink);
     --jt-on-bg: var(--color-ink);
     --jt-on-border: var(--color-ink);
@@ -465,7 +465,7 @@ html.lenis body {
   }
   @media (hover: hover) and (pointer: fine) {
     .jelly-tabs__chip[data-on="false"]:hover .jelly-tabs__skin {
-      border-color: rgb(143 178 245 / 0.6);
+      border-color: rgb(124 198 255 / 0.6);
       color: var(--jt-on-text);
     }
     .jelly-tabs[data-surface="light"] .jelly-tabs__chip[data-on="false"]:hover .jelly-tabs__skin {
@@ -476,7 +476,7 @@ html.lenis body {
     background: var(--jt-on-bg);
     border-color: var(--jt-on-border);
     color: var(--jt-on-text);
-    box-shadow: 0 8px 20px -12px rgb(7 19 49 / 0.5);
+    box-shadow: 0 8px 20px -12px rgb(6 26 70 / 0.5);
   }
   /* caps = label kapital kecil berjarak (tab kategori menu) */
   .jelly-tabs[data-variant="caps"] .jelly-tabs__skin {

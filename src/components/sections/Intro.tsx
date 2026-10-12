@@ -207,7 +207,7 @@ export function Intro({ children }: { children: React.ReactNode }) {
           {/* Aurora WebGL (React Bits "Aurora"): tirai cahaya redup — navy lembut di sisi, biru aksen di tengah */}
           <div data-intro-aurora className="absolute inset-0 overflow-hidden opacity-0">
             <Aurora
-              colorStops={["#2F4F8F", "#8FB2F5", "#2F4F8F"]}
+              colorStops={["#2A62C9", "#7CC6FF", "#2A62C9"]}
               amplitude={0.85}
               blend={0.6}
               speed={0.5}
@@ -217,7 +217,7 @@ export function Intro({ children }: { children: React.ReactNode }) {
           {/* Cahaya biru aksen yang sangat lembut di belakang logo */}
           <div
             data-intro-glow
-            className="absolute inset-0 m-auto size-[60vmin] rounded-full bg-[radial-gradient(circle,rgb(143_178_245/0.28)_0%,rgb(19_45_99/0.55)_38%,transparent_70%)] opacity-60"
+            className="absolute inset-0 m-auto size-[60vmin] rounded-full bg-[radial-gradient(circle,rgb(124_198_255/0.28)_0%,rgb(16_60_150/0.55)_38%,transparent_70%)] opacity-60"
           />
         </div>
       )}
@@ -241,7 +241,7 @@ export function Intro({ children }: { children: React.ReactNode }) {
               {/* Pendar berdenyut di sekeliling lingkaran (.logo-glow); kilau hanya di huruf j & b (BrandLogo shine) */}
               <div
                 data-intro-logo-inner
-                className="logo-glow rounded-full opacity-0 shadow-[0_30px_80px_-20px_rgb(0_0_0/0.6),0_0_70px_rgb(143_178_245/0.14)]"
+                className="logo-glow rounded-full opacity-0 shadow-[0_30px_80px_-20px_rgb(0_0_0/0.6),0_0_70px_rgb(124_198_255/0.14)]"
               >
                 <BrandLogo size="lg" shine />
               </div>
@@ -258,7 +258,7 @@ export function Intro({ children }: { children: React.ReactNode }) {
                   ))}
                 </p>
                 <p data-intro-word className="flex items-center gap-3 opacity-0">
-                  <span className="pl-[0.3em] font-sans text-small font-semibold tracking-[0.3em] text-accent uppercase [text-shadow:0_0_18px_rgb(143_178_245/0.55)] sm:text-body">
+                  <span className="pl-[0.3em] font-sans text-small font-semibold tracking-[0.3em] text-accent uppercase [text-shadow:0_0_18px_rgb(124_198_255/0.55)] sm:text-body">
                     {uiText.brandSubline}
                   </span>
                 </p>
