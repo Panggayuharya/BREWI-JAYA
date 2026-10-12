@@ -2,7 +2,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { StackPanel } from "@/components/motion/StackPanel";
 import { Intro } from "@/components/sections/Intro";
 import { Home } from "@/components/sections/Home";
-import { Place } from "@/components/sections/Place";
+import { About } from "@/components/sections/About";
 import { MenuCoffee } from "@/components/sections/MenuCoffee";
 import { Gallery } from "@/components/sections/Gallery";
 import { News } from "@/components/sections/News";
@@ -14,9 +14,9 @@ import { Reservation } from "@/components/sections/Reservation";
  * Intro membungkus Home (Home terungkap dari balik intro, tanpa layar kosong).
  * Section yang di-pin (Intro+Home) bersaudara di level ini — tidak ada pin di dalam pin.
  * Menu Kopi, Non-Kopi, dan Makanan ada di satu section (MenuCoffee) yang berputar otomatis.
- * Overlapping: Tempat menimpa Home, Menu Kopi menimpa Tempat,
+ * Overlapping: Tentang menimpa Home, Menu Kopi menimpa Tentang,
  * Galeri menimpa Menu, dan seterusnya dengan sudut atas membulat.
- * Hanya dua tempat yang memakai "tahan lalu timpa" (pinPrevious): Menu Kopi (Tempat ditahan)
+ * Hanya dua tempat yang memakai "tahan lalu timpa" (pinPrevious): Menu Kopi (Tentang ditahan)
  * dan News (Galeri ditahan) — sengaja tidak berurutan supaya scroll tidak terasa berat.
  */
 export default function Page() {
@@ -28,7 +28,7 @@ export default function Page() {
           <Home />
         </Intro>
         <StackPanel className="bg-ink">
-          <Place />
+          <About />
         </StackPanel>
         <StackPanel className="bg-ink" pinPrevious>
           <MenuCoffee />

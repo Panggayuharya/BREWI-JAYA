@@ -52,12 +52,12 @@ export function Home() {
           dipasang (CLS). Isi Home tetap di tengah 1 layar pertama. */}
       <div data-stack-content className="relative min-h-[calc(max(100vh,100svh)+var(--radius-section)+4rem)]">
         {/* Tiga foto latar yang dibaurkan: foto tim di tengah, espresso di kiri, barista di kanan.
-            Tepi tiap foto dipudarkan (mask) supaya saling menyatu; warnanya diseragamkan (redup, bernada biru tipis).
+            Tepi tiap foto dipudarkan (mask) supaya saling menyatu; warnanya diseragamkan (terang, bernada biru kalem).
             unoptimized: file sudah WebP ringan; pengoptimal AVIF Next bisa macet pada foto besar ini. */}
         <div
           data-home-bg
           aria-hidden
-          className="absolute inset-0 bg-ink filter-[saturate(0.72)_brightness(0.82)_contrast(1.06)]"
+          className="absolute inset-0 bg-ink filter-[saturate(0.8)_brightness(1)_contrast(1.04)]"
         >
           <div className="absolute inset-y-0 left-0 hidden w-[38%] mask-[linear-gradient(90deg,#000_50%,transparent)] lg:block">
             <Image
@@ -92,18 +92,19 @@ export function Home() {
               className="object-cover object-[50%_62%]"
             />
           </div>
-          {/* Sentuhan biru tipis agar ketiga foto senada dengan navy brand */}
-          <div className="absolute inset-0 bg-navy-soft/45 mix-blend-color" />
+          {/* Sentuhan biru kalem (tidak pekat) agar ketiga foto senada dengan navy brand */}
+          <div className="absolute inset-0 bg-[rgb(70_88_122/0.3)] mix-blend-color" />
         </div>
-        {/* Lapisan navy: paling gelap di tengah (teks), tetap memperlihatkan foto; gelap di atas & bawah */}
+        {/* Lapisan navy keabu-abuan (slate): sedikit lebih gelap di tengah supaya teks tetap terbaca,
+            tapi cukup tipis sehingga foto tampil terang */}
         <div
           aria-hidden
-          className="absolute inset-0 bg-[radial-gradient(ellipse_60%_70%_at_50%_50%,rgb(7_19_49/0.78)_0%,rgb(7_19_49/0.55)_70%,rgb(7_19_49/0.6)_100%)] max-lg:bg-[linear-gradient(180deg,rgb(7_19_49/0.65)_0%,rgb(7_19_49/0.8)_100%)]"
+          className="absolute inset-0 bg-[radial-gradient(ellipse_60%_70%_at_50%_50%,rgb(20_28_44/0.72)_0%,rgb(20_28_44/0.38)_70%,rgb(20_28_44/0.42)_100%)] max-lg:bg-[linear-gradient(180deg,rgb(20_28_44/0.5)_0%,rgb(20_28_44/0.66)_100%)]"
         />
-        <div aria-hidden className="absolute inset-x-0 top-0 h-40 bg-linear-to-b from-ink/80 to-transparent" />
+        <div aria-hidden className="absolute inset-x-0 top-0 h-40 bg-linear-to-b from-[rgb(20_28_44/0.6)] to-transparent" />
         <div
           aria-hidden
-          className="absolute inset-x-0 bottom-0 h-[40%] bg-linear-to-t from-ink via-ink/50 to-transparent"
+          className="absolute inset-x-0 bottom-0 h-[40%] bg-linear-to-t from-[rgb(20_28_44)] via-[rgb(20_28_44/0.5)] to-transparent"
         />
         {/* Kilau biru aksen lembut di tengah */}
         <div
@@ -113,10 +114,10 @@ export function Home() {
         {/* Cahaya navy lembut dari kiri atas & kanan atas (simetris) agar latar tidak datar */}
         <div
           aria-hidden
-          className="absolute inset-0 bg-[radial-gradient(ellipse_at_15%_20%,var(--color-navy-soft)_0%,transparent_50%),radial-gradient(ellipse_at_85%_20%,var(--color-navy-soft)_0%,transparent_50%)] opacity-70"
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_15%_20%,var(--color-navy-soft)_0%,transparent_50%),radial-gradient(ellipse_at_85%_20%,var(--color-navy-soft)_0%,transparent_50%)] opacity-25"
         />
-        {/* Bidang navy melengkung di kanan & kiri (cermin), desktop saja. Cukup pekat supaya terasa,
-            tapi tetap transparan sehingga foto latar masih terlihat. */}
+        {/* Bidang melengkung di kanan & kiri (cermin), desktop saja. Biru kalem & transparan:
+            bentuknya terasa tanpa membuat latar terlalu biru. */}
         {(["right", "left"] as const).map((side) => (
           <svg
             key={side}
@@ -128,8 +129,8 @@ export function Home() {
           >
             <defs>
               <linearGradient id={`home-blob-${side}`} x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="var(--color-navy-soft)" stopOpacity="0.45" />
-                <stop offset="100%" stopColor="var(--color-navy-soft)" stopOpacity="0.78" />
+                <stop offset="0%" stopColor="rgb(52 66 94)" stopOpacity="0.28" />
+                <stop offset="100%" stopColor="rgb(36 48 72)" stopOpacity="0.5" />
               </linearGradient>
             </defs>
             <path d="M600 0H260C180 120 330 240 210 380C90 520 60 700 180 900H600Z" fill={`url(#home-blob-${side})`} />
@@ -137,12 +138,12 @@ export function Home() {
         ))}
         <div
           aria-hidden
-          className="absolute bottom-[-45vw] left-1/2 size-[130vw] -translate-x-1/2 rounded-full bg-linear-to-t from-navy-soft to-deep/40 lg:hidden"
+          className="absolute bottom-[-45vw] left-1/2 size-[130vw] -translate-x-1/2 rounded-full bg-linear-to-t from-[rgb(36_48_72/0.85)] to-[rgb(36_48_72/0.2)] lg:hidden"
         />
         {/* pt lebih besar dari pb: blok teks sengaja turun supaya judul "BREWi JAYA" pas di tengah layar */}
         <div className="container-brewi relative flex min-h-screen-s items-center justify-center pt-[calc(var(--nav-h)+8rem)] pb-12 lg:pt-[calc(var(--nav-h)+5.5rem)]">
           {/* Nama brand + deskripsi, rata tengah */}
-          <div data-home-text className="relative z-10 flex w-full flex-col items-center gap-6 text-center">
+          <div data-home-text className="relative z-10 flex w-full flex-col items-center gap-6 text-center [text-shadow:0_2px_18px_rgb(0_0_0/0.35)]">
             <p className="overflow-hidden">
               {/* pl = jarak huruf di ujung teks, supaya label benar-benar di tengah */}
               <span data-home-line className="eyebrow pl-[0.2em] text-accent lg:pl-[0.28em]">

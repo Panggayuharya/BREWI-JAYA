@@ -114,13 +114,3 @@ export function getNews(): NewsItem[] {
 export function getLatestNews(limit: number): NewsItem[] {
   return getNews().slice(0, limit);
 }
-
-export function getNewsBySlug(slug: string): NewsItem | undefined {
-  return getNews().find((n) => n.slug === slug);
-}
-
-/** Berita lain untuk bagian "Berita lainnya": kategori sama lebih dulu. */
-export function getRelatedNews(item: NewsItem, limit: number): NewsItem[] {
-  const others = getNews().filter((n) => n.id !== item.id);
-  return [...others.filter((n) => n.category === item.category), ...others.filter((n) => n.category !== item.category)].slice(0, limit);
-}

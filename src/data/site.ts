@@ -1,4 +1,4 @@
-import type { NavLink, PageName, PageSection, PlacePhoto, SiteSettings } from "@/types";
+import type { AboutPhoto, NavLink, PageName, PageSection, SiteSettings } from "@/types";
 
 // TODO: ganti data asli (logo final, link sosial media, email)
 const siteSettings: SiteSettings = {
@@ -31,15 +31,15 @@ const pageSections: PageSection[] = [
   {
     id: 4,
     page: "tentang",
-    sectionKey: "place",
-    title: "Tempat Buat Lama-Lama",
-    // Sengaja kosong: section ini hanya menampilkan judul; cerita ada di deskripsi tiap foto (placePhotos)
+    sectionKey: "about",
     subtitle: "",
-    body: "",
+    title: "Tempat Buat Lama-Lama",
+    // TODO: sesuaikan dengan cerita asli dari pemilik
+    body: "BREWi JAYA adalah rumah untuk kopi lokal pilihan yang diseduh barista kami, hidangan rumahan, dan ruang yang hangat. Datang untuk kerja, ngobrol bareng teman, atau sekadar melepas penat. Sekali mampir, biasanya betah lama-lama.",
     mediaUrl: "",
     mediaType: "image",
-    ctaLabel: "",
-    ctaLink: "",
+    ctaLabel: "Lihat Menu",
+    ctaLink: "#menu",
     sortOrder: 2,
     isActive: true,
   },
@@ -84,18 +84,14 @@ export const uiText = {
   scrollHint: "Scroll",
   menuEyebrow: "Our Menu",
   galleryTitle: "Suasana di Brewi",
+  aboutSecondaryCta: "Reservasi",
   locationEyebrow: "Lokasi",
   locationTitle: "LOKASI BREWI",
   openingHours: "Jam buka",
   everyDay: "Setiap hari",
   newsEyebrow: "News",
   newsTitle: "Kabar dari Brewi",
-  newsSubtitle: "Promo, event, dan menu baru. Semua kabar terbaru dari BREWi JAYA ada di sini.",
-  newsSeeAll: "Lihat semua berita",
-  newsFilterAll: "Semua",
-  newsEmpty: "Belum ada berita di kategori ini.",
-  newsOther: "Berita lainnya",
-  newsBack: "Kembali ke News",
+  newsClose: "Tutup",
   menuSeeDetail: "Lihat detail menu",
   menuBookTitle: "Buku Menu",
   menuBookHint: "Ketuk halaman, geser, atau pakai tombol panah untuk membalik halaman.",
@@ -118,63 +114,19 @@ export function getPageSection(page: PageName, key: string): PageSection | undef
   return pageSections.find((s) => s.page === page && s.sectionKey === key && s.isActive);
 }
 
-// Foto suasana asli dari pemilik (public/gallery). Tambah/ganti foto cukup di daftar ini.
-// Sebagian besar berbeda dari foto di Gallery; espresso-shot, area-indoor & ruang-meeting sengaja dipakai di keduanya.
-// Maksimal 8 foto (jumlah slot StackSpread). `description` tampil di panel samping saat foto diklik.
-const placePhotos: PlacePhoto[] = [
-  {
-    title: "Tim BREWi JAYA",
-    imageUrl: "/gallery/tim-brewi.webp",
-    description:
-      "Orang-orang di balik bar. Barista dan kru BREWi JAYA yang menyeduh tiap cangkir, hafal pesanan langganan, dan selalu siap ngobrol soal biji kopi.",
-  },
-  {
-    title: "Satu Shot, Penuh Rasa",
-    imageUrl: "/gallery/espresso-shot.webp",
-    description:
-      "Espresso ditarik langsung di atas susu dingin. Setiap shot ditimbang dan diatur waktunya oleh barista, supaya rasa kopinya selalu seimbang dari gelas pertama sampai terakhir.",
-  },
-  {
-    title: "Area Indoor",
-    imageUrl: "/place/area-indoor.webp",
-    description:
-      "Jendela besar, cahaya alami, dan dinding kayu yang hangat. Pilih meja dekat jendela untuk kerja, menerima telepon penting, atau sekadar menikmati sore.",
-  },
-  {
-    title: "Pelayanan di Kasir",
-    imageUrl: "/gallery/pelayanan-kasir.webp",
-    description:
-      "Pesan, bayar, lalu duduk santai. Tim kasir siap membantu memilih menu, termasuk menyesuaikan racikan dengan selera kamu.",
-  },
-  {
-    title: "Ruang Meeting",
-    imageUrl: "/place/ruang-meeting.webp",
-    description:
-      "Sudut yang lebih tenang untuk diskusi serius. Meja untuk beberapa orang, kopi seduh manual di tengah meja, dan suasana yang bikin obrolan mengalir.",
-  },
-  {
-    title: "Ngobrol Santai",
-    imageUrl: "/gallery/pelanggan-ngobrol.webp",
-    description:
-      "Meja lega untuk ngobrol bareng teman, keluarga, atau rekan kerja. Cukup untuk rombongan kecil dan cocok untuk meeting santai.",
-  },
-  {
-    title: "Suasana Pengunjung",
-    imageUrl: "/gallery/suasana-pengunjung.webp",
-    description:
-      "Ramai tapi tetap nyaman. Dari kumpul komunitas sampai acara kantor, ruangan ini siap menampung momen kamu.",
-  },
-  {
-    title: "Sofa & Rak Buku",
-    imageUrl: "/gallery/sofa-dan-rak.webp",
-    description:
-      "Sofa dengan rak buku dan dekorasi di sekelilingnya. Sudut paling tenang untuk yang memang berniat lama-lama.",
-  },
+// Foto suasana yang bergantian di section Tentang (public/gallery & public/place).
+// Tambah/ganti foto cukup di daftar ini; `title` tampil sebagai keterangan foto.
+const aboutPhotos: AboutPhoto[] = [
+  { title: "Tim BREWi JAYA", imageUrl: "/gallery/tim-brewi.webp" },
+  { title: "Satu Shot, Penuh Rasa", imageUrl: "/gallery/espresso-shot.webp" },
+  { title: "Area Indoor", imageUrl: "/place/area-indoor.webp" },
+  { title: "Pelayanan di Kasir", imageUrl: "/gallery/pelayanan-kasir.webp" },
+  { title: "Ruang Meeting", imageUrl: "/place/ruang-meeting.webp" },
+  { title: "Ngobrol Santai", imageUrl: "/gallery/pelanggan-ngobrol.webp" },
+  { title: "Suasana Pengunjung", imageUrl: "/gallery/suasana-pengunjung.webp" },
+  { title: "Sofa & Rak Buku", imageUrl: "/gallery/sofa-dan-rak.webp" },
 ];
 
-/** Foto latar section Tempat (digelapkan di belakang foto-foto yang menyebar). */
-export const placeBackgroundImage = "/gallery/booth-brewi-jaya.webp";
-
-export function getPlacePhotos(): PlacePhoto[] {
-  return placePhotos;
+export function getAboutPhotos(): AboutPhoto[] {
+  return aboutPhotos;
 }

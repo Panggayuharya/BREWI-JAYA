@@ -69,7 +69,7 @@ export function Navbar() {
     return () => window.removeEventListener(INTRO_EVENT, onIntro);
   }, []);
 
-  const hrefFor = (id: string) => (onHome ? `#${id}` : id === "news" ? "/news" : id === "home" ? "/" : `/#${id}`);
+  const hrefFor = (id: string) => (onHome ? `#${id}` : id === "home" ? "/" : `/#${id}`);
 
   const go = (id: string) => {
     setOpen(false);

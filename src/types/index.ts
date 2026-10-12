@@ -138,12 +138,10 @@ export interface NavLink {
   label: string;
 }
 
-/** Foto suasana tempat untuk roda foto di section "Tempat Buat Lama-Lama". */
-export interface PlacePhoto {
+/** Foto suasana yang bergantian otomatis di section Tentang. */
+export interface AboutPhoto {
   title: string;
   imageUrl: string;
-  /** Cerita singkat foto, tampil saat foto diklik */
-  description: string;
 }
 
 export type NewsCategory = "promo" | "event" | "menu_baru";

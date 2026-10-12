@@ -1,12 +1,7 @@
-import Link from "next/link";
 import type { NewsItem } from "@/types";
 import { newsCategoryLabels } from "@/data/news";
 import { formatDate } from "@/lib/format";
 import { MediaImage } from "@/components/ui/MediaImage";
-
-/** Grid kartu berita 1/2/3 kolom (halaman News & "Berita lainnya") dan `sizes` foto yang sesuai. */
-export const NEWS_GRID = "grid grid-cols-1 gap-x-8 gap-y-14 md:grid-cols-2 lg:grid-cols-3";
-export const NEWS_GRID_SIZES = "(min-width: 1024px) 380px, (min-width: 768px) 50vw, 100vw";
 
 /** Foto berita: foto suasana penuh (cover), foto cup menu utuh di atas latar cream hangat (contain). */
 export function NewsImage({ item, sizes, priority }: { item: NewsItem; sizes: string; priority?: boolean }) {
@@ -59,7 +54,8 @@ export function NewsMeta({ item, surface = "light", className = "" }: { item: Ne
 }
 
 /**
- * Kartu berita editorial: foto, kategori & tanggal, judul, ringkasan. Seluruh kartu bisa diklik.
+ * Kartu berita editorial: foto, kategori & tanggal, judul, ringkasan. Seluruh kartu bisa diklik
+ * dan memanggil `onOpen` (isi lengkap tampil di NewsDialog, tanpa pindah halaman).
  * `featured` = kartu besar (foto lebih lebar, judul lebih besar).
  * `compact` = di HP tampil sebagai baris ringkas (foto kecil di kiri, judul di kanan, tanpa ringkasan);
  * mulai tablet (md) kembali menjadi kartu biasa.
@@ -71,12 +67,14 @@ export function NewsCard({
   compact = false,
   priority = false,
   sizes,
+  onOpen,
 }: {
   item: NewsItem;
   featured?: boolean;
   compact?: boolean;
   priority?: boolean;
   sizes: string;
+  onOpen: (item: NewsItem) => void;
 }) {
   return (
     <article
@@ -106,10 +104,14 @@ export function NewsCard({
                 : "text-xl leading-snug sm:text-2xl"
           }`}
         >
-          {/* Link membentang ke seluruh kartu (after:inset-0) */}
-          <Link href={`/news/${item.slug}`} className="after:absolute after:inset-0 after:content-['']">
+          {/* Tombol membentang ke seluruh kartu (after:inset-0) */}
+          <button
+            type="button"
+            onClick={() => onOpen(item)}
+            className="cursor-pointer text-left after:absolute after:inset-0 after:content-['']"
+          >
             {item.title}
-          </Link>
+          </button>
         </h3>
         <p
           className={`leading-relaxed text-ink/70 ${
