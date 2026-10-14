@@ -54,6 +54,8 @@ export function MediaImage({
       alt={alt}
       fill
       sizes={sizes}
+      // Kualitas 90 (bawaan Next 75): foto produk & suasana lebih tajam di layar HP/retina
+      quality={90}
       priority={priority}
       loading={loading}
       className={`${fit === "contain" ? "object-contain" : "object-cover"} ${className}`}

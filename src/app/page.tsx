@@ -13,7 +13,7 @@ import { Reservation } from "@/components/sections/Reservation";
  * Urutan section sesuai design.md 1.
  * Intro membungkus Home (Home terungkap dari balik intro, tanpa layar kosong).
  * Section yang di-pin (Intro+Home) bersaudara di level ini — tidak ada pin di dalam pin.
- * Menu Kopi, Non-Kopi, dan Makanan ada di satu section (MenuCoffee) yang berputar otomatis.
+ * Menu Kopi, Non-Kopi, dan Makanan ada di satu section (MenuCoffee): tab kategori + grid kartu.
  * Overlapping: Tentang menimpa Home, Menu Kopi menimpa Tentang,
  * Galeri menimpa Menu, dan seterusnya dengan sudut atas membulat.
  * Hanya dua tempat yang memakai "tahan lalu timpa" (pinPrevious): Menu Kopi (Tentang ditahan)
@@ -33,7 +33,7 @@ export default function Page() {
         <StackPanel className="bg-ink" pinPrevious>
           <MenuCoffee />
         </StackPanel>
-        <StackPanel className="bg-navy-soft">
+        <StackPanel className="bg-navy-soft" wave>
           <Gallery />
         </StackPanel>
         <StackPanel className="bg-warm" pinPrevious>

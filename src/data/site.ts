@@ -77,6 +77,35 @@ export const navLinks: NavLink[] = [
   { id: "reservasi", label: "Reservasi" },
 ];
 
+/**
+ * Section Menu di beranda: hanya informasi singkat (menu lengkap ada di buku menu /menu).
+ * `drink` & `food` = foto transparan (PNG/WebP tanpa latar) di folder public.
+ * `food` masih kosong → tampil placeholder bulat "Foto menyusul"; isi misalnya "/menu/makanan.webp".
+ */
+export const menuShowcase = {
+  title: "Kopi & Makanan Brewi",
+  description:
+    "Dari kopi susu gula aren sampai makanan hangat untuk teman nongkrong. Semua dibuat segar setiap hari dengan bahan pilihan.",
+  bigWord: "MENU",
+  drink: "/menu/kopi-susu-brewi.webp",
+  food: "",
+  highlights: [
+    {
+      title: "Kopi & Non-Kopi",
+      text: "Biji kopi lokal yang di-roasting dengan teliti lalu diseduh langsung oleh barista kami, dari espresso yang pekat sampai kopi susu gula aren yang lembut. Untuk yang ingin tanpa kafein, ada perpaduan susu segar, buah, dan pandan yang ringan dan menyegarkan.",
+    },
+    {
+      title: "Makanan Hangat",
+      text: "Mulai dari camilan renyah sampai makanan berat yang mengenyangkan. Dimasak saat dipesan, pas untuk menemani ngopi, kerja, atau ngobrol bersama teman.",
+    },
+  ],
+  /** Kartu ajakan di panel kanan → buku menu (flipbook) di /menu */
+  cta: {
+    title: "Lihat detail menu",
+    text: "Buka buku menu lengkap beserta harga",
+  },
+};
+
 export const uiText = {
   brandWordmark: "BREWi JAYA",
   brandSubline: "Coffee & Eatery",
@@ -93,7 +122,6 @@ export const uiText = {
   newsTitle: "Kabar dari Brewi",
   newsOther: "Berita lainnya",
   newsBack: "Kembali ke beranda",
-  menuSeeDetail: "Lihat detail menu",
   menuBookTitle: "Buku Menu",
   menuBookHint: "Ketuk halaman, geser, atau pakai tombol panah untuk membalik halaman.",
   menuBack: "Kembali ke Beranda",

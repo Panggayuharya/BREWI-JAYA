@@ -3,6 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
+    // Next 16 hanya menerima kualitas yang terdaftar; 90 dipakai MediaImage supaya foto lebih tajam
+    qualities: [75, 90],
   },
   // Halaman detail per menu (/menu/[slug]) sudah dihapus; tautan lama diarahkan ke buku menu (flipbook).
   async redirects() {
