@@ -11,33 +11,16 @@ interface StackPanelProps {
    * sudah di-pin sendiri (Intro) — tidak boleh pin di dalam/di atas pin.
    */
   pinPrevious?: boolean;
-  /** Tepi atas bergelombang (bukan sudut membulat), mis. Galeri yang naik menimpa Menu */
-  wave?: boolean;
+  /** Tepi atas lurus (tanpa sudut membulat & tanpa menimpa section sebelumnya), mis. Galeri setelah Menu */
+  flat?: boolean;
 }
-
-/**
- * Bentuk gelombang tepi atas (naik di kiri, turun di tengah, naik lagi di kanan lalu landai).
- * Dipakai sebagai mask: area di atas kurva transparan, jadi section sebelumnya terlihat di baliknya.
- * preserveAspectRatio none → kurva melebar mengikuti lebar layar, tingginya tetap --wave-h.
- */
-const WAVE_SVG = encodeURIComponent(
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" preserveAspectRatio="none"><path d="M0 70C80 30 160 8 240 8C360 8 480 112 610 112C740 112 870 8 1010 8C1150 8 1300 70 1440 72V120H0Z"/></svg>`,
-);
-const WAVE_MASK = `url("data:image/svg+xml,${WAVE_SVG}") top / 100% var(--wave-h) no-repeat, linear-gradient(#000, #000) 0 calc(var(--wave-h) - 1px) / 100% 100% no-repeat`;
-
-const WAVE_STYLE: React.CSSProperties = {
-  // Tinggi gelombang: 56px di HP sampai 120px di layar lebar
-  ["--wave-h" as string]: "clamp(56px, 8vw, 120px)",
-  mask: WAVE_MASK,
-  WebkitMask: WAVE_MASK,
-};
 
 /**
  * Pembungkus section yang "menimpa" section sebelumnya (design.md 1 & 12.1).
  * Section baru naik dengan sudut atas membulat; section sebelumnya tetap ukuran normal
  * (tidak dikecilkan) dan tanpa efek gelap.
  */
-export function StackPanel({ children, className = "", pinPrevious = false, wave = false }: StackPanelProps) {
+export function StackPanel({ children, className = "", pinPrevious = false, flat = false }: StackPanelProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   useGSAP(
@@ -66,14 +49,9 @@ export function StackPanel({ children, className = "", pinPrevious = false, wave
   );
 
   return (
-    // Gelombang: panel naik setinggi --wave-h (bukan hanya --radius-section) supaya lekukan terdalam pun tetap
-    // menimpa section sebelumnya; padding-top yang sama menjaga isi panel tetap di posisi lamanya.
     <div
       ref={ref}
-      style={wave ? WAVE_STYLE : undefined}
-      className={`relative overflow-clip ${
-        wave ? "-mt-(--wave-h) pt-[calc(var(--wave-h)-var(--radius-section))]" : "-mt-(--radius-section) rounded-t-section shadow-lift"
-      } ${className}`}
+      className={`relative overflow-clip ${flat ? "" : "-mt-(--radius-section) rounded-t-section shadow-lift"} ${className}`}
     >
       {children}
     </div>

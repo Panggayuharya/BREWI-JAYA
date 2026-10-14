@@ -9,7 +9,7 @@ import { Magnet } from "@/components/ui/Magnet";
 
 /**
  * Home (design.md 5): nama brand + deskripsi di tengah layar, di atas foto latar.
- * Latar: tiga foto yang dibaurkan (heroBackdrop di src/data/site.ts), diredam dengan gradasi navy.
+ * Latar: tiga foto yang dibaurkan (heroBackdrop di src/data/site.ts), diredam dengan gradasi hitam.
  */
 export function Home() {
   const ref = useRef<HTMLElement>(null);
@@ -30,8 +30,6 @@ export function Home() {
           scrub: 1,
           refreshPriority: -1,
         };
-        gsap.to('[data-home-blob="right"]', { x: 40, ease: "none", scrollTrigger: st });
-        gsap.to('[data-home-blob="left"]', { x: -40, ease: "none", scrollTrigger: st });
         gsap.to("[data-home-bg]", { yPercent: 10, ease: "none", scrollTrigger: st });
         gsap.to("[data-home-text]", { yPercent: -25, ease: "none", scrollTrigger: st });
       });
@@ -45,7 +43,7 @@ export function Home() {
       id="home"
       data-nav="home"
       data-nav-theme="dark"
-      className="relative overflow-hidden bg-deep text-warm"
+      className="relative overflow-hidden bg-ink text-warm"
     >
       {/* +radius-section +4rem: panel berikutnya (naik -radius-section) beserta bayangan ke atasnya
           (shadow-lift) mulai di luar layar, jadi tidak ada yang terlihat lalu terdorong saat pin intro
@@ -59,7 +57,7 @@ export function Home() {
           aria-hidden
           className="absolute inset-0 bg-ink filter-[saturate(0.8)_brightness(1)_contrast(1.04)]"
         >
-          <div className="absolute inset-y-0 left-0 hidden w-[38%] mask-[linear-gradient(90deg,#000_50%,transparent)] lg:block">
+          <div className="absolute inset-y-0 left-0 hidden w-[38%] mask-[linear-gradient(90deg,#000_100%,transparent)] lg:block">
             <Image
               src={heroBackdrop.left}
               alt=""
@@ -70,7 +68,7 @@ export function Home() {
               className="object-cover object-[40%_50%]"
             />
           </div>
-          <div className="absolute inset-y-0 right-0 hidden w-[38%] mask-[linear-gradient(270deg,#000_50%,transparent)] lg:block">
+          <div className="absolute inset-y-0 right-0 hidden w-[38%]  lg:block">
             <Image
               src={heroBackdrop.right}
               alt=""
@@ -92,50 +90,29 @@ export function Home() {
               className="object-cover object-[50%_62%]"
             />
           </div>
-          {/* Sentuhan biru kalem (tidak pekat) agar ketiga foto senada dengan navy brand */}
-          <div className="absolute inset-0 bg-[rgb(40_100_200/0.22)] mix-blend-color" />
+          {/* Sentuhan biru tipis agar ketiga foto senada dengan biru brand, tanpa membuat latar serba biru */}
+          <div className="absolute inset-0 bg-[rgb(40_100_200/0.14)] mix-blend-color" />
         </div>
-        {/* Lapisan navy cerah: sedikit lebih gelap di tengah supaya teks tetap terbaca,
+        {/* Lapisan hitam tipis (HP saja): sedikit lebih gelap ke bawah supaya teks tetap terbaca,
             tapi cukup tipis sehingga foto tampil terang */}
         <div
           aria-hidden
-          className="absolute inset-0 bg-[radial-gradient(ellipse_60%_70%_at_50%_50%,rgb(10_30_72/0.72)_0%,rgb(10_30_72/0.38)_70%,rgb(10_30_72/0.42)_100%)] max-lg:bg-[linear-gradient(180deg,rgb(10_30_72/0.5)_0%,rgb(10_30_72/0.66)_100%)]"
+          className="absolute inset-0 max-lg:bg-[linear-gradient(180deg,rgb(11_12_15/0.45)_0%,rgb(11_12_15/0.65)_100%)]"
         />
-        <div aria-hidden className="absolute inset-x-0 top-0 h-40 bg-linear-to-b from-[rgb(10_30_72/0.6)] to-transparent" />
         <div
           aria-hidden
-          className="absolute inset-x-0 bottom-0 h-[40%] bg-linear-to-t from-[rgb(10_30_72)] via-[rgb(10_30_72/0.5)] to-transparent"
+          className="absolute inset-x-0 bottom-0 h-[40%] bg-linear-to-t from-ink via-ink/50 to-transparent"
         />
         {/* Kilau biru aksen lembut di tengah */}
         <div
           aria-hidden
           className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_42%,rgb(124_198_255/0.14)_0%,transparent_55%)]"
         />
-        {/* Cahaya navy lembut dari kiri atas & kanan atas (simetris) agar latar tidak datar */}
+        {/* Cahaya biru lembut dari kiri atas & kanan atas (simetris) agar latar tidak datar */}
         <div
           aria-hidden
           className="absolute inset-0 bg-[radial-gradient(ellipse_at_15%_20%,var(--color-navy-soft)_0%,transparent_50%),radial-gradient(ellipse_at_85%_20%,var(--color-navy-soft)_0%,transparent_50%)] opacity-25"
         />
-        {/* Bidang melengkung di kanan & kiri (cermin), desktop saja. Biru cerah & transparan:
-            bentuknya terasa tanpa membuat latar terlalu biru. */}
-        {(["right", "left"] as const).map((side) => (
-          <svg
-            key={side}
-            data-home-blob={side}
-            aria-hidden
-            viewBox="0 0 600 900"
-            preserveAspectRatio="none"
-            className={`absolute top-0 hidden h-full w-[42%] lg:block ${side === "right" ? "right-0" : "left-0 -scale-x-100"}`}
-          >
-            <defs>
-              <linearGradient id={`home-blob-${side}`} x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="rgb(46 104 196)" stopOpacity="0.28" />
-                <stop offset="100%" stopColor="rgb(22 56 128)" stopOpacity="0.5" />
-              </linearGradient>
-            </defs>
-            <path d="M600 0H260C180 120 330 240 210 380C90 520 60 700 180 900H600Z" fill={`url(#home-blob-${side})`} />
-          </svg>
-        ))}
         <div
           aria-hidden
           className="absolute bottom-[-45vw] left-1/2 size-[130vw] -translate-x-1/2 rounded-full bg-linear-to-t from-[rgb(22_56_128/0.85)] to-[rgb(22_56_128/0.2)] lg:hidden"

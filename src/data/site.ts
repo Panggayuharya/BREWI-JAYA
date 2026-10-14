@@ -1,4 +1,4 @@
-import type { AboutPhoto, NavLink, PageName, PageSection, SiteSettings } from "@/types";
+import type { NavLink, PageName, PageSection, SiteSettings } from "@/types";
 
 // TODO: ganti data asli (logo final, link sosial media, email)
 const siteSettings: SiteSettings = {
@@ -20,7 +20,7 @@ const pageSections: PageSection[] = [
     title: "BREWi JAYA",
     subtitle: "Coffee & Eatery",
     // Deskripsi di bawah judul Home
-    body: "Kopi lokal pilihan, racikan barista, dan hidangan rumahan dalam satu tempat yang hangat. Pas untuk nugas, ngobrol lama, atau sekadar melepas penat.",
+    body: "-",
     mediaUrl: "", // foto latar Home: lihat heroBackdrop
     mediaType: "image",
     ctaLabel: "More info",
@@ -79,8 +79,7 @@ export const navLinks: NavLink[] = [
 
 /**
  * Section Menu di beranda: hanya informasi singkat (menu lengkap ada di buku menu /menu).
- * `drink` & `food` = foto transparan (PNG/WebP tanpa latar) di folder public.
- * `food` masih kosong → tampil placeholder bulat "Foto menyusul"; isi misalnya "/menu/makanan.webp".
+ * `drink` = foto cup transparan (PNG/WebP tanpa latar) di folder public.
  */
 export const menuShowcase = {
   title: "Kopi & Makanan Brewi",
@@ -88,7 +87,6 @@ export const menuShowcase = {
     "Dari kopi susu gula aren sampai makanan hangat untuk teman nongkrong. Semua dibuat segar setiap hari dengan bahan pilihan.",
   bigWord: "MENU",
   drink: "/menu/kopi-susu-brewi.webp",
-  food: "",
   highlights: [
     {
       title: "Kopi & Non-Kopi",
@@ -99,7 +97,7 @@ export const menuShowcase = {
       text: "Mulai dari camilan renyah sampai makanan berat yang mengenyangkan. Dimasak saat dipesan, pas untuk menemani ngopi, kerja, atau ngobrol bersama teman.",
     },
   ],
-  /** Kartu ajakan di panel kanan → buku menu (flipbook) di /menu */
+  /** Tombol ajakan di bawah deskripsi section Menu → buku menu (flipbook) di /menu */
   cta: {
     title: "Lihat detail menu",
     text: "Buka buku menu lengkap beserta harga",
@@ -113,7 +111,6 @@ export const uiText = {
   scrollHint: "Scroll",
   menuEyebrow: "Our Menu",
   galleryTitle: "Suasana di Brewi",
-  aboutSecondaryCta: "Reservasi",
   locationEyebrow: "Lokasi",
   locationTitle: "LOKASI BREWI",
   openingHours: "Jam buka",
@@ -143,19 +140,83 @@ export function getPageSection(page: PageName, key: string): PageSection | undef
   return pageSections.find((s) => s.page === page && s.sectionKey === key && s.isActive);
 }
 
-// Foto suasana yang bergantian di section Tentang (public/gallery & public/place).
-// Tambah/ganti foto cukup di daftar ini; `title` tampil sebagai keterangan foto.
-const aboutPhotos: AboutPhoto[] = [
-  { title: "Tim BREWi JAYA", imageUrl: "/gallery/tim-brewi.webp" },
-  { title: "Satu Shot, Penuh Rasa", imageUrl: "/gallery/espresso-shot.webp" },
-  { title: "Area Indoor", imageUrl: "/place/area-indoor.webp" },
-  { title: "Pelayanan di Kasir", imageUrl: "/gallery/pelayanan-kasir.webp" },
-  { title: "Ruang Meeting", imageUrl: "/place/ruang-meeting.webp" },
-  { title: "Ngobrol Santai", imageUrl: "/gallery/pelanggan-ngobrol.webp" },
-  { title: "Suasana Pengunjung", imageUrl: "/gallery/suasana-pengunjung.webp" },
-  { title: "Sofa & Rak Buku", imageUrl: "/gallery/sofa-dan-rak.webp" },
-];
-
-export function getAboutPhotos(): AboutPhoto[] {
-  return aboutPhotos;
-}
+/**
+ * Isi section Tentang di luar judul & deskripsi utama (yang ada di pageSections "tentang/about").
+ * Foto diambil dari public/gallery & public/place.
+ * TODO: angka di `stats` dan `footnotes` masih contoh, sesuaikan dengan data asli dari pemilik.
+ */
+export const aboutContent = {
+  eyebrow: "Tentang BREWi JAYA",
+  stats: [
+    { value: "20+", label: "Pilihan menu kopi & makanan" },
+    { value: "4.8", label: "Rating ulasan Google*" },
+    { value: "7", label: "Hari buka dalam seminggu" },
+    { value: "100%", label: "Biji kopi lokal" },
+  ],
+  /**
+   * Kolase foto tengah: atas & bawah (mendatar, di depan), tengah (tegak, di belakang) + kartu biru.
+   * Tiap slot berganti foto bergiliran; tambah/ganti foto cukup di daftar slot masing-masing.
+   */
+  collage: {
+    top: [
+      { title: "Area Indoor", imageUrl: "/place/area-indoor.webp" },
+      { title: "Area Rooftop", imageUrl: "/place/area-rooftop.webp" },
+      { title: "Tampak Depan", imageUrl: "/place/tampak-depan.webp" },
+    ],
+    middle: [
+      { title: "Barista di Bar", imageUrl: "/gallery/barista-di-bar.webp" },
+      { title: "Tim BREWi JAYA", imageUrl: "/gallery/tim-brewi.webp" },
+      { title: "Pelayanan di Kasir", imageUrl: "/gallery/pelayanan-kasir.webp" },
+    ],
+    bottom: [
+      { title: "Ngobrol Santai", imageUrl: "/gallery/pelanggan-ngobrol.webp" },
+      { title: "Ruang Meeting", imageUrl: "/place/ruang-meeting.webp" },
+      { title: "Sofa & Rak Buku", imageUrl: "/gallery/sofa-dan-rak.webp" },
+    ],
+    badge: "Diseduh dengan sepenuh hati",
+  },
+  side: {
+    title: "Rasa Lokal, Suasana Hangat, Pelayanan Sepenuh Hati",
+    body: "Setiap cangkir diseduh dari biji kopi lokal pilihan, disajikan bersama hidangan rumahan di ruang yang nyaman untuk siapa saja.",
+    points: ["Kopi lokal pilihan", "Ruang nyaman & luas", "Hidangan rumahan", "Cocok untuk kerja & kumpul"],
+    footnotes: ["* Berdasarkan ulasan pengunjung di Google Maps", "* Buka setiap hari, cek jam buka di section Lokasi"],
+  },
+  banner: {
+    eyebrow: "Suasana BREWi",
+    title: "Tempat ngopi yang bikin betah",
+    body: "Dari pagi yang tenang sampai malam yang ramai, selalu ada sudut yang pas untuk menikmati kopi bersama orang terdekat.",
+    ctaLabel: "Reservasi Tempat",
+    ctaLink: "#reservasi",
+    imageUrl: "/place/area-rooftop.webp",
+  },
+  why: {
+    eyebrow: "Kenapa BREWi",
+    title: "Tempat yang Pas untuk Ngopi, Kerja, dan Kumpul",
+    photos: [
+      { title: "Espresso Shot", imageUrl: "/gallery/espresso-shot.webp" },
+      { title: "Suasana Pengunjung", imageUrl: "/gallery/suasana-pengunjung.webp" },
+    ],
+    /** Kartu putih kecil di atas kolase foto */
+    cardItems: [
+      { title: "Kopi Lokal", text: "Diseduh barista kami setiap hari." },
+      { title: "Ruang Nyaman", text: "Indoor, rooftop, dan ruang meeting." },
+    ],
+    features: [
+      {
+        icon: "coffee",
+        title: "Racikan barista",
+        text: "Espresso sampai kopi susu gula aren, diseduh langsung saat dipesan.",
+      },
+      {
+        icon: "space",
+        title: "Ruang untuk semua",
+        text: "Area indoor yang tenang, rooftop yang santai, dan ruang meeting untuk kerja tim.",
+      },
+      {
+        icon: "people",
+        title: "Pelayanan ramah",
+        text: "Tim kami siap membantu, dari memilih menu sampai menyiapkan tempat reservasi.",
+      },
+    ],
+  },
+} as const;

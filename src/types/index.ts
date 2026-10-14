@@ -138,12 +138,6 @@ export interface NavLink {
   label: string;
 }
 
-/** Foto suasana yang bergantian otomatis di section Tentang. */
-export interface AboutPhoto {
-  title: string;
-  imageUrl: string;
-}
-
 export type NewsCategory = "promo" | "event" | "menu_baru";
 
 export interface NewsItem {

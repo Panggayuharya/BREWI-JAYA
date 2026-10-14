@@ -27,13 +27,13 @@ export default function Page() {
         <Intro>
           <Home />
         </Intro>
-        <StackPanel className="bg-ink">
+        <StackPanel className="bg-warm">
           <About />
         </StackPanel>
-        <StackPanel className="bg-ink" pinPrevious>
+        <StackPanel className="bg-warm" pinPrevious>
           <MenuCoffee />
         </StackPanel>
-        <StackPanel className="bg-navy-soft" wave>
+        <StackPanel className="bg-navy-soft" flat>
           <Gallery />
         </StackPanel>
         <StackPanel className="bg-warm" pinPrevious>
