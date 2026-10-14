@@ -18,13 +18,13 @@ function rise(reduced: boolean, delay = 0) {
 
 /**
  * Menu: section informasi singkat (referensi poster produk) di latar putih.
- * Kiri: judul, deskripsi, tombol "Lihat detail menu" → buku menu (flipbook) di /menu, lalu poin 01/02.
+ * Kiri: judul, deskripsi (dua paragraf), lalu tombol "Lihat detail menu" → buku menu (flipbook) di /menu.
  * Kanan: cup kopi miring di depan lingkaran biru, dengan kata "MENU" raksasa di latar.
  * HP: teks → visual, bertumpuk dari atas ke bawah.
  */
 export function MenuCoffee() {
   const reduced = useReducedMotion();
-  const { title, description, bigWord, drink, highlights, cta } = menuShowcase;
+  const { title, description, bigWord, drink, cta } = menuShowcase;
 
   return (
     <section
@@ -37,7 +37,7 @@ export function MenuCoffee() {
         data-stack-content
         className="container-brewi relative grid gap-10 pt-[calc(var(--nav-h)+2rem)] pb-24 lg:min-h-screen-s lg:grid-cols-2 lg:items-center lg:gap-12 lg:pt-[calc(var(--nav-h)+1.5rem)] lg:pb-16"
       >
-        {/* Kiri: teks, tombol ajakan, poin menu */}
+        {/* Kiri: judul, deskripsi, tombol ajakan */}
         <div className="relative z-10 flex flex-col gap-5 sm:gap-6">
           <motion.p {...rise(reduced)} className="eyebrow text-accent-deep">
             {uiText.menuEyebrow}
@@ -48,30 +48,17 @@ export function MenuCoffee() {
           >
             {title}
           </motion.h2>
-          <motion.p
-            {...rise(reduced, 0.16)}
-            className="max-w-[46ch] text-[15px] leading-[1.75] text-ink/70 sm:text-[16px]"
-          >
-            {description}
-          </motion.p>
+          {description.map((text, i) => (
+            <motion.p
+              key={i}
+              {...rise(reduced, 0.16 + i * 0.06)}
+              className="max-w-[46ch] text-[15px] leading-[1.75] text-ink/70 sm:text-[16px]"
+            >
+              {text}
+            </motion.p>
+          ))}
 
           <MenuCta cta={cta} reduced={reduced} />
-
-          <div className="grid gap-5 pt-4 sm:grid-cols-2 sm:gap-6">
-            {highlights.map((h, i) => (
-              <motion.div
-                key={h.title}
-                {...rise(reduced, 0.22 + i * 0.1)}
-                className="border-l-2 border-accent-deep pl-4"
-              >
-                <h3 className="flex items-center gap-2.5 text-[13px] font-bold tracking-[0.12em] text-ink uppercase sm:text-[14px]">
-                  <span className="font-display text-[13px] font-semibold tracking-normal text-accent-deep">0{i + 1}</span>
-                  {h.title}
-                </h3>
-                <p className="mt-2 text-[13.5px] leading-[1.7] text-ink/65">{h.text}</p>
-              </motion.div>
-            ))}
-          </div>
         </div>
 
         {/* Kanan: kata MENU raksasa → lingkaran biru → cup kopi (depan) */}
@@ -131,7 +118,7 @@ export function MenuCoffee() {
  */
 function MenuCta({ cta, reduced }: { cta: { title: string; text: string }; reduced: boolean }) {
   return (
-    <motion.div {...rise(reduced, 0.22)}>
+    <motion.div {...rise(reduced, 0.3)}>
       <Link
         href="/menu"
         title={cta.text}

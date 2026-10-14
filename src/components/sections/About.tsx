@@ -11,16 +11,6 @@ import { Magnet } from "@/components/ui/Magnet";
 import { Reveal } from "@/components/motion/Reveal";
 
 type PhotoData = { title: string; imageUrl: string };
-type FeatureIcon = (typeof aboutContent.why.features)[number]["icon"];
-
-/** Foto berbingkai bulat; parent menentukan ukuran (aspect/height). */
-function Photo({ photo, sizes, className = "" }: { photo: PhotoData; sizes: string; className?: string }) {
-  return (
-    <div className={`relative overflow-hidden rounded-photo bg-cream shadow-soft ${className}`}>
-      <Image src={photo.imageUrl} alt={photo.title} fill sizes={sizes} className="object-cover" />
-    </div>
-  );
-}
 
 /** Jeda antar pergantian foto kolase (ms); slot atas → tengah → bawah berganti bergiliran. */
 const COLLAGE_STEP_MS = 2600;
@@ -155,35 +145,14 @@ function AboutCollage({ reduced }: { reduced: boolean }) {
   );
 }
 
-/** Ikon garis sederhana untuk daftar keunggulan & kartu biru. */
-function Icon({ name, className = "size-6" }: { name: FeatureIcon | "check" | "leaf"; className?: string }) {
+/** Ikon garis sederhana untuk poin keunggulan & kartu biru. */
+function Icon({ name, className = "size-6" }: { name: "check" | "leaf"; className?: string }) {
   const paths: Record<typeof name, React.ReactNode> = {
     check: <path d="m5 12.5 4.5 4.5L19 7.5" />,
     leaf: (
       <>
         <path d="M5 19c0-8 5-13 14-14-1 9-6 14-14 14Z" />
         <path d="M5 19 13 11" />
-      </>
-    ),
-    coffee: (
-      <>
-        <path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9Z" />
-        <path d="M16 10h1.5a2.5 2.5 0 0 1 0 5H16" />
-        <path d="M8 3.5c-.6.8-.6 1.7 0 2.5M12 3.5c-.6.8-.6 1.7 0 2.5" />
-      </>
-    ),
-    space: (
-      <>
-        <path d="M4 11V8a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v3" />
-        <path d="M3 13a2 2 0 0 1 4 0v2h10v-2a2 2 0 0 1 4 0v4H3v-4Z" />
-        <path d="M6 17v2M18 17v2" />
-      </>
-    ),
-    people: (
-      <>
-        <circle cx="9" cy="8" r="3" />
-        <path d="M3.5 19a5.5 5.5 0 0 1 11 0" />
-        <path d="M16 5.5a3 3 0 0 1 0 5.5M17.5 14a5.5 5.5 0 0 1 3 5" />
       </>
     ),
   };
@@ -195,17 +164,16 @@ function Icon({ name, className = "size-6" }: { name: FeatureIcon | "check" | "l
 }
 
 /**
- * Tentang (mengikuti referensi halaman "About"), tiga bagian:
+ * Tentang (mengikuti referensi halaman "About"), dua bagian:
  * 1. Latar putih, tiga kolom: judul + deskripsi + angka + tombol | kolase foto berganti + kartu biru | poin keunggulan.
  * 2. Banner foto selebar layar (lapisan hitam tipis) dengan judul di tengah + tombol reservasi.
- * 3. Latar putih keabuan: kolase foto + kartu kecil | "Kenapa BREWi" dengan daftar ikon biru.
  * HP: semua kolom bertumpuk dari atas ke bawah.
  */
 export function About() {
   const section = getPageSection("tentang", "about");
   const scrollTo = useScrollTo();
   const reduced = useReducedMotion();
-  const { eyebrow, stats, side, banner, why } = aboutContent;
+  const { eyebrow, stats, side, banner } = aboutContent;
 
   return (
     <section id="tentang" data-nav="tentang" data-nav-theme="cream" className="relative bg-warm text-ink">
@@ -310,52 +278,6 @@ export function About() {
                 {banner.ctaLabel}
               </Button>
             </Reveal>
-          </div>
-        </div>
-
-        {/* 3. Kenapa BREWi */}
-        <div className="bg-cream">
-          <div className="container-brewi grid gap-14 py-20 lg:grid-cols-2 lg:items-center lg:gap-16 lg:py-28">
-            {/* Kiri: dua foto bertumpuk + kartu putih kecil */}
-            <Reveal className="relative pb-24 sm:pb-20">
-              <div className="grid grid-cols-[1fr_1.3fr] items-start gap-4">
-                <Photo photo={why.photos[0]} sizes="(min-width: 1024px) 20vw, 40vw" className="mt-0 aspect-4/3" />
-                <Photo photo={why.photos[1]} sizes="(min-width: 1024px) 26vw, 55vw" className="mt-14 aspect-4/5" />
-              </div>
-              <div className="absolute bottom-0 left-0 grid w-[min(100%,26rem)] grid-cols-2 gap-5 rounded-card bg-warm p-5 shadow-raised">
-                {why.cardItems.map((c) => (
-                  <div key={c.title} className="flex flex-col gap-1">
-                    <p className="text-[14px] font-bold text-ink">{c.title}</p>
-                    <p className="text-[13px] leading-snug text-ink/60">{c.text}</p>
-                  </div>
-                ))}
-              </div>
-            </Reveal>
-
-            {/* Kanan: judul + daftar keunggulan dengan ikon */}
-            <div className="flex flex-col gap-6">
-              <Reveal>
-                <p className="eyebrow text-accent-deep">{why.eyebrow}</p>
-              </Reveal>
-              <Reveal delay={0.05}>
-                <h3 className="font-display text-section font-semibold tracking-[-0.02em] text-ink">{why.title}</h3>
-              </Reveal>
-              <ul className="flex flex-col gap-5 pt-2">
-                {why.features.map((f, i) => (
-                  <li key={f.title}>
-                    <Reveal delay={0.1 + i * 0.08} className="flex items-start gap-4">
-                      <span className="flex size-14 shrink-0 items-center justify-center rounded-inner bg-ink text-accent">
-                        <Icon name={f.icon} className="size-7" />
-                      </span>
-                      <span className="flex flex-col gap-1">
-                        <span className="text-[16px] font-bold text-ink">{f.title}</span>
-                        <span className="text-[14px] leading-[1.7] text-ink/65">{f.text}</span>
-                      </span>
-                    </Reveal>
-                  </li>
-                ))}
-              </ul>
-            </div>
           </div>
         </div>
       </div>

@@ -83,20 +83,13 @@ export const navLinks: NavLink[] = [
  */
 export const menuShowcase = {
   title: "Kopi & Makanan Brewi",
-  description:
+  /** Deskripsi di atas tombol; tiap item = satu paragraf */
+  description: [
     "Dari kopi susu gula aren sampai makanan hangat untuk teman nongkrong. Semua dibuat segar setiap hari dengan bahan pilihan.",
+    "Biji kopi lokal kami diseduh langsung oleh barista, dari espresso yang pekat sampai kopi susu yang lembut. Untuk yang ingin tanpa kafein, ada racikan susu segar, buah, dan pandan yang menyegarkan, ditemani camilan renyah hingga makanan berat yang dimasak saat dipesan.",
+  ],
   bigWord: "MENU",
   drink: "/menu/kopi-susu-brewi.webp",
-  highlights: [
-    {
-      title: "Kopi & Non-Kopi",
-      text: "Biji kopi lokal yang di-roasting dengan teliti lalu diseduh langsung oleh barista kami, dari espresso yang pekat sampai kopi susu gula aren yang lembut. Untuk yang ingin tanpa kafein, ada perpaduan susu segar, buah, dan pandan yang ringan dan menyegarkan.",
-    },
-    {
-      title: "Makanan Hangat",
-      text: "Mulai dari camilan renyah sampai makanan berat yang mengenyangkan. Dimasak saat dipesan, pas untuk menemani ngopi, kerja, atau ngobrol bersama teman.",
-    },
-  ],
   /** Tombol ajakan di bawah deskripsi section Menu → buku menu (flipbook) di /menu */
   cta: {
     title: "Lihat detail menu",
@@ -189,35 +182,5 @@ export const aboutContent = {
     ctaLabel: "Reservasi Tempat",
     ctaLink: "#reservasi",
     imageUrl: "/place/area-rooftop.webp",
-  },
-  why: {
-    eyebrow: "Kenapa BREWi",
-    title: "Tempat yang Pas untuk Ngopi, Kerja, dan Kumpul",
-    photos: [
-      { title: "Espresso Shot", imageUrl: "/gallery/espresso-shot.webp" },
-      { title: "Suasana Pengunjung", imageUrl: "/gallery/suasana-pengunjung.webp" },
-    ],
-    /** Kartu putih kecil di atas kolase foto */
-    cardItems: [
-      { title: "Kopi Lokal", text: "Diseduh barista kami setiap hari." },
-      { title: "Ruang Nyaman", text: "Indoor, rooftop, dan ruang meeting." },
-    ],
-    features: [
-      {
-        icon: "coffee",
-        title: "Racikan barista",
-        text: "Espresso sampai kopi susu gula aren, diseduh langsung saat dipesan.",
-      },
-      {
-        icon: "space",
-        title: "Ruang untuk semua",
-        text: "Area indoor yang tenang, rooftop yang santai, dan ruang meeting untuk kerja tim.",
-      },
-      {
-        icon: "people",
-        title: "Pelayanan ramah",
-        text: "Tim kami siap membantu, dari memilih menu sampai menyiapkan tempat reservasi.",
-      },
-    ],
   },
 } as const;
