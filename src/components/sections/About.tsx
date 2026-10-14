@@ -120,7 +120,7 @@ function AboutCollage({ reduced }: { reduced: boolean }) {
       onPointerLeave={() => setHovered(false)}
       // Desktop: lebar dibatasi (--collage-max) supaya tinggi kolase (aspect 0.93) muat dalam satu layar
       style={{ ["--collage-max" as string]: "min(100%, calc((100svh - var(--nav-h) - 6rem) * 0.93), 595px)" }}
-      className="relative mx-auto aspect-[0.93] w-full max-w-[34rem] lg:max-w-(--collage-max)"
+      className="relative mx-auto aspect-[0.93] w-full max-w-136 lg:max-w-(--collage-max)"
     >
       {SLOT_ORDER.map((name, i) => (
         <CollageSlot
@@ -319,8 +319,8 @@ export function About() {
             {/* Kiri: dua foto bertumpuk + kartu putih kecil */}
             <Reveal className="relative pb-24 sm:pb-20">
               <div className="grid grid-cols-[1fr_1.3fr] items-start gap-4">
-                <Photo photo={why.photos[0]} sizes="(min-width: 1024px) 20vw, 40vw" className="mt-0 aspect-[4/3]" />
-                <Photo photo={why.photos[1]} sizes="(min-width: 1024px) 26vw, 55vw" className="mt-14 aspect-[4/5]" />
+                <Photo photo={why.photos[0]} sizes="(min-width: 1024px) 20vw, 40vw" className="mt-0 aspect-4/3" />
+                <Photo photo={why.photos[1]} sizes="(min-width: 1024px) 26vw, 55vw" className="mt-14 aspect-4/5" />
               </div>
               <div className="absolute bottom-0 left-0 grid w-[min(100%,26rem)] grid-cols-2 gap-5 rounded-card bg-warm p-5 shadow-raised">
                 {why.cardItems.map((c) => (

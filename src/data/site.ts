@@ -128,6 +128,7 @@ export const uiText = {
   openMaps: "Buka di Google Maps",
   chatOutlet: "Chat outlet ini",
   photoSoon: "Foto menyusul",
+  placeFull: "Tempat sedang penuh",
   placeDetailOpen: "Lihat cerita foto",
   copyright: "Hak cipta dilindungi.",
 } as const;

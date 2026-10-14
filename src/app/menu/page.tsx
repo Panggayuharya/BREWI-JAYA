@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { menuBookPages } from "@/data/menu";
 import { getSiteSettings, uiText } from "@/data/site";
-import { HeroHeading, NewsBody, NewsHero } from "@/components/news/NewsHero";
-import { MenuFlipbook } from "@/components/menu/MenuFlipbook";
+import { HeroHeading, NewsBody, NewsHero } from "@/components/sections/NewsHero";
+import { MenuFlipbook } from "@/components/sections/MenuFlipbook";
 import { buttonClass } from "@/components/ui/Button";
 
 export const metadata: Metadata = {

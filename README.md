@@ -21,19 +21,21 @@ pnpm start        # jalankan hasil build
 
 ```
 src/
-├── app/                 # route: / (landing), /menu, /news, /news/[slug]
+├── app/                 # route: / (landing), /menu, /news/[slug], /admin (dashboard)
 ├── components/
-│   ├── layout/          # Navbar, MobileMenu, Footer
-│   ├── sections/        # section landing page (+ menu-coffee/)
-│   ├── menu/            # MenuFlipbook
-│   ├── news/            # NewsCard, NewsHero, NewsList
+│   ├── admin/           # komponen dashboard admin
+│   ├── layout/          # Navbar, MobileMenu, Footer, SiteEffects
+│   ├── sections/        # section landing page + MenuFlipbook, NewsCard, NewsHero
 │   ├── motion/          # SmoothScrollProvider (Lenis), StackPanel, Reveal, PhotoTintToggle
-│   ├── reactbits/       # Aurora
-│   └── ui/              # Button, BrandLogo, JellyNav, JellyTabs, StackSpread, PhotoSpotlight, dll.
-├── data/                # semua konten (site, menu, news, outlets, gallery)
+│   └── ui/              # Button, BrandLogo, JellyNav, JellyTabs, Aurora, MediaImage, dll.
+├── data/                # konten statis (site, menu, news, outlets, gallery)
+├── db/                  # koneksi & skema database (drizzle)
+├── server/              # query, auth, upload (khusus server)
 ├── hooks/
-├── lib/                 # gsap, jelly, easing, hours, whatsapp, format, utils
+├── lib/                 # gsap, jelly, easing, hours, whatsapp, format, utils, dll.
 └── types/               # tipe data (mengikuti erd.md)
+scripts/                 # migrasi, seed, buat admin, setup storage (pnpm db:*, admin:create, storage:setup)
+drizzle/                 # file migrasi SQL
 public/                  # foto (brand, gallery, menu, menu-book, place)
 ```
 

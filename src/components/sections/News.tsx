@@ -1,7 +1,7 @@
 import { getLatestNews } from "@/data/news";
 import { uiText } from "@/data/site";
 import { Reveal } from "@/components/motion/Reveal";
-import { NewsCard } from "@/components/news/NewsCard";
+import { NewsCard } from "@/components/sections/NewsCard";
 
 /**
  * News di landing page: 3 pengumuman terbaru (1 besar + 2 kecil). Kartu diklik → halaman

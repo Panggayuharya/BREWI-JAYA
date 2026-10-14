@@ -6,7 +6,7 @@ import { uiText } from "@/data/site";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { jumpScroll, useLenis } from "@/components/motion/SmoothScrollProvider";
 import { BrandLogo } from "@/components/ui/BrandLogo";
-import { Aurora } from "@/components/reactbits/Aurora";
+import { Aurora } from "@/components/ui/Aurora";
 import { documentTop } from "@/lib/utils";
 
 // Pusat lingkaran yang membuka Home = posisi logo (tengah layar)

@@ -3,8 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getNews, getNewsBySlug, getRelatedNews } from "@/data/news";
 import { getSiteSettings, uiText } from "@/data/site";
-import { NewsBody, NewsHero } from "@/components/news/NewsHero";
-import { NEWS_GRID, NEWS_GRID_SIZES, NewsCard, NewsImage, NewsMeta } from "@/components/news/NewsCard";
+import { NewsBody, NewsHero } from "@/components/sections/NewsHero";
+import { NEWS_GRID, NEWS_GRID_SIZES, NewsCard, NewsImage, NewsMeta } from "@/components/sections/NewsCard";
 
 type Params = { params: Promise<{ slug: string }> };
 

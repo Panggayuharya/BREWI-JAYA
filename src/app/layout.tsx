@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Plus_Jakarta_Sans, Unbounded } from "next/font/google";
-import { SmoothScrollProvider } from "@/components/motion/SmoothScrollProvider";
-import { PhotoTintToggle } from "@/components/motion/PhotoTintToggle";
+import { SiteEffects } from "@/components/layout/SiteEffects";
 import { getSiteSettings } from "@/data/site";
 import "./globals.css";
 
@@ -51,8 +50,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         >
           Lewati ke konten
         </a>
-        <SmoothScrollProvider>{children}</SmoothScrollProvider>
-        <PhotoTintToggle />
+        <SiteEffects>{children}</SiteEffects>
       </body>
     </html>
   );

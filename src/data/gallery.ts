@@ -1,5 +1,19 @@
 import type { GalleryCategory, GalleryItem } from "@/types";
 
+/** Label kategori galeri (dipakai di admin) */
+export const galleryCategoryLabels: Record<GalleryCategory, string> = {
+  interior: "Interior",
+  kopi: "Kopi",
+  makanan: "Makanan",
+  event: "Event",
+  customer: "Pengunjung",
+};
+
+/** Foto potret (lebih tinggi dari lebar) masuk baris atas marquee; sama dengan kolom is_portrait di DB. */
+export function isPortrait({ width, height }: { width: number; height: number }) {
+  return height > width;
+}
+
 // Foto suasana asli dari pemilik. Baris atas 4:5 (foto portrait), baris bawah 5:4 (foto landscape).
 type Row = "top" | "bottom";
 const photos: { src: string; caption: string; category: GalleryCategory; row: Row }[] = [

@@ -70,6 +70,17 @@ export interface Outlet {
   whatsappContacts: WhatsappContact[];
 }
 
+/** Outlet + status "tempat penuh" dari admin; `fullUntil` = ISO string, null bila tidak sedang penuh. */
+export interface OutletWithStatus extends Outlet {
+  fullUntil: string | null;
+}
+
+/** Satu halaman buku menu (flipbook /menu) */
+export interface MenuBookPage {
+  src: string;
+  alt: string;
+}
+
 export type MenuCategoryType = "kopi" | "non_kopi" | "makanan";
 
 export interface MenuCategory {
