@@ -110,6 +110,8 @@ export const uiText = {
   everyDay: "Setiap hari",
   newsEyebrow: "News",
   newsTitle: "Kabar dari Brewi",
+  newsSubtitle: "Promo, event, dan menu baru terbaru dari BREWi JAYA. Jangan sampai ketinggalan.",
+  newsReadMore: "Baca selengkapnya",
   newsOther: "Berita lainnya",
   newsBack: "Kembali ke beranda",
   newsAlsoRead: "Baca juga",

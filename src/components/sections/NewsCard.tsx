@@ -1,23 +1,46 @@
 import Link from "next/link";
 import type { NewsItem } from "@/types";
 import { newsCategoryLabels } from "@/data/news";
+import { uiText } from "@/data/site";
 import { formatDate } from "@/lib/format";
 import { MediaImage } from "@/components/ui/MediaImage";
+import { LinkPending } from "@/components/ui/LinkPending";
 
-/** Foto berita: foto suasana penuh (cover), foto cup menu utuh di atas latar cream hangat (contain). */
-export function NewsImage({ item, sizes, priority }: { item: NewsItem; sizes: string; priority?: boolean }) {
+/**
+ * Foto berita: foto suasana penuh (cover), foto cup menu utuh (contain) di atas latar bercahaya biru.
+ * `tone="dark"` = latar navy untuk kartu bertema gelap; `cutoutInset` = posisi cup di dalam kotak.
+ */
+export function NewsImage({
+  item,
+  sizes,
+  priority,
+  tone = "light",
+  cutoutInset = "inset-x-[18%] inset-y-[8%]",
+}: {
+  item: NewsItem;
+  sizes: string;
+  priority?: boolean;
+  tone?: "light" | "dark";
+  cutoutInset?: string;
+}) {
   if (item.imageIsCutout) {
     return (
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_110%,rgb(124_198_255/0.35),transparent_65%),var(--color-cream)]">
-        <div className="absolute inset-x-[18%] inset-y-[8%] transition-transform duration-700 ease-out-soft group-hover:scale-[1.03]">
+      <div
+        className={`absolute inset-0 ${
+          tone === "dark"
+            ? "bg-[radial-gradient(ellipse_at_50%_35%,rgb(124_198_255/0.35),transparent_60%),linear-gradient(160deg,var(--color-navy-soft),var(--color-ink)_75%)]"
+            : "bg-[radial-gradient(ellipse_at_50%_110%,rgb(124_198_255/0.35),transparent_65%),var(--color-cream)]"
+        }`}
+      >
+        <div className={`absolute ${cutoutInset} transition-transform duration-700 ease-out-soft group-hover:scale-[1.04]`}>
           <MediaImage
             src={item.imageUrl}
             alt={item.title}
             sizes={sizes}
             priority={priority}
             fit="contain"
-            placeholderTone="light"
-            className="drop-shadow-[0_18px_18px_rgba(62,42,32,0.3)]"
+            placeholderTone={tone}
+            className={tone === "dark" ? "drop-shadow-[0_24px_30px_rgba(0,0,0,0.5)]" : "drop-shadow-[0_18px_18px_rgba(62,42,32,0.3)]"}
           />
         </div>
       </div>
@@ -31,8 +54,8 @@ export function NewsImage({ item, sizes, priority }: { item: NewsItem; sizes: st
         alt={item.title}
         sizes={sizes}
         priority={priority}
-        placeholderTone="light"
-        className="photo-warm transition-transform duration-700 ease-out-soft group-hover:scale-[1.03]"
+        placeholderTone={tone}
+        className="photo-warm transition-transform duration-700 ease-out-soft group-hover:scale-[1.04]"
       />
     </div>
   );
@@ -54,68 +77,95 @@ export function NewsMeta({ item, surface = "light", className = "" }: { item: Ne
   );
 }
 
-/**
- * Kartu berita editorial: foto, kategori & tanggal, judul, ringkasan. Seluruh kartu bisa diklik
- * dan membuka halaman detail berita (/news/[slug]).
- * `featured` = kartu besar (foto lebih lebar, judul lebih besar).
- * `compact` = di HP tampil sebagai baris ringkas (foto kecil di kiri, judul di kanan, tanpa ringkasan);
- * mulai tablet (md) kembali menjadi kartu biasa.
- * `priority` = foto dimuat lebih dulu; pasang di kartu pertama yang terlihat tanpa scroll (gambar LCP).
- */
-export function NewsCard({
-  item,
-  featured = false,
-  compact = false,
-  priority = false,
-  sizes,
-}: {
-  item: NewsItem;
-  featured?: boolean;
-  compact?: boolean;
-  priority?: boolean;
-  sizes: string;
-}) {
+/** Link judul yang membentang ke seluruh kartu (after:inset-0) + tanda "sedang membuka". */
+function CardLink({ item, pendingClass = "" }: { item: NewsItem; pendingClass?: string }) {
   return (
-    <article
-      className={`group relative flex h-full gap-4 sm:gap-5 ${compact ? "flex-row items-center md:flex-col md:items-stretch" : "flex-col"}`}
+    <Link href={`/news/${item.slug}`} className="after:absolute after:inset-0 after:z-10 after:content-['']">
+      {item.title}
+      <LinkPending className={pendingClass} />
+    </Link>
+  );
+}
+
+/** Panah dalam lingkaran; ikut bergeser saat kartu disorot. */
+function ArrowCircle({ className = "" }: { className?: string }) {
+  return (
+    <span
+      aria-hidden
+      className={`flex size-10 shrink-0 items-center justify-center rounded-full transition-[background-color,color,translate] duration-500 ease-out-soft group-hover:translate-x-1 ${className}`}
     >
-      <div
-        className={`relative overflow-hidden bg-cream shadow-soft transition-shadow duration-500 ease-out-soft group-hover:shadow-raised ${
-          compact
-            ? // HP: thumbnail persegi kecil; tablet ke atas kartu 4:3 seperti biasa
-              "aspect-square w-28 shrink-0 rounded-inner md:aspect-4/3 md:w-auto md:rounded-card"
-            : // HP: foto lebih pendek (16:9) supaya tidak memenuhi layar; tablet ke atas tetap 4:3
-              featured
-              ? "aspect-video rounded-card sm:aspect-4/3 lg:aspect-16/11"
-              : "aspect-video rounded-card sm:aspect-4/3"
-        }`}
-      >
-        <NewsImage item={item} sizes={compact ? `(max-width: 767px) 112px, ${sizes}` : sizes} priority={priority} />
-      </div>
-      <div className={`flex min-w-0 flex-col ${compact ? "gap-1.5 md:gap-3" : "gap-2 sm:gap-3"}`}>
-        <NewsMeta item={item} className={`text-ink ${compact ? "max-md:gap-2 max-md:text-[11px] max-md:tracking-widest" : ""}`} />
-        <h3
-          className={`font-display font-semibold tracking-[-0.01em] text-ink transition-colors duration-300 group-hover:text-coffee ${
-            featured
-              ? "text-[22px] leading-[1.18] sm:text-[clamp(26px,2.6vw,36px)] sm:leading-[1.12]"
-              : compact
-                ? "line-clamp-3 text-[17px] leading-snug md:line-clamp-none md:text-2xl"
-                : "text-xl leading-snug sm:text-2xl"
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+        <path d="M5 12h14M13 6l6 6-6 6" />
+      </svg>
+    </span>
+  );
+}
+
+/**
+ * Berita utama di landing page: foto penuh, teks putih di atas gradasi gelap, chip kategori, dan ajakan baca.
+ * Foto cup tampil di latar navy bercahaya (bukan abu) supaya kartu tetap terasa hidup: di HP cup di atas teks,
+ * mulai sm cup di kanan dan teks di kiri (gradasi dari kiri) supaya cup tidak tertutup teks.
+ */
+export function NewsFeature({ item, sizes }: { item: NewsItem; sizes: string }) {
+  const cutout = item.imageIsCutout;
+  return (
+    <article className="group relative isolate flex aspect-4/5 h-full flex-col justify-end overflow-hidden rounded-card bg-ink text-warm shadow-raised sm:aspect-4/3 lg:aspect-auto lg:min-h-130">
+      {/* Foto + gradasi di belakang (-z-10, kartu `isolate`); teks sengaja tidak `relative` supaya link membentang ke seluruh kartu */}
+      <div className="absolute inset-0 -z-10">
+        <NewsImage
+          item={item}
+          sizes={sizes}
+          tone="dark"
+          cutoutInset="inset-x-[22%] top-[6%] bottom-[46%] sm:inset-y-[10%] sm:right-[4%] sm:left-auto sm:w-[40%]"
+        />
+        <div
+          aria-hidden
+          className={`absolute inset-0 bg-linear-to-t from-ink to-transparent ${
+            cutout ? "via-ink/40 sm:bg-linear-to-r sm:via-ink/60" : "via-ink/55"
           }`}
-        >
-          {/* Link membentang ke seluruh kartu (after:inset-0) */}
-          <Link href={`/news/${item.slug}`} className="after:absolute after:inset-0 after:content-['']">
-            {item.title}
-          </Link>
+        />
+      </div>
+      <div className={`flex flex-col gap-4 p-6 sm:p-8 lg:p-10 ${cutout ? "sm:max-w-[60%]" : ""}`}>
+        <div className="flex flex-wrap items-center gap-3 text-small font-semibold tracking-[0.14em] uppercase">
+          <span className="rounded-pill bg-accent px-3 py-1 text-ink">{newsCategoryLabels[item.category]}</span>
+          <time dateTime={item.publishedAt} className="text-cream/70">
+            {formatDate(item.publishedAt)}
+          </time>
+        </div>
+        <h3 className="max-w-xl font-display text-[26px] leading-[1.12] font-semibold tracking-[-0.01em] sm:text-[clamp(30px,3vw,42px)]">
+          <CardLink item={item} />
         </h3>
-        <p
-          className={`leading-relaxed text-ink/70 ${
-            compact ? "line-clamp-3 text-body max-md:hidden" : "line-clamp-2 text-[15px] sm:line-clamp-3 sm:text-body"
-          }`}
-        >
-          {item.excerpt}
-        </p>
+        <p className="line-clamp-2 max-w-lg leading-relaxed text-cream/75 sm:text-body">{item.excerpt}</p>
+        <span className="mt-1 inline-flex w-fit items-center gap-3 text-[15px] font-semibold">
+          {uiText.newsReadMore}
+          <ArrowCircle className="size-9 bg-warm/10 text-warm ring-1 ring-warm/25 group-hover:bg-accent group-hover:text-ink group-hover:ring-accent" />
+        </span>
       </div>
+    </article>
+  );
+}
+
+/**
+ * Berita pendamping di landing page: kartu horizontal di panel cream (foto di kiri, teks di kanan).
+ * HP: foto lebih kecil dan ringkasan disembunyikan supaya bagian ini tidak terlalu panjang.
+ */
+export function NewsTile({ item, sizes }: { item: NewsItem; sizes: string }) {
+  return (
+    <article className="group relative flex h-full items-center gap-4 overflow-hidden rounded-card bg-cream p-3 transition-[background-color,box-shadow] duration-500 ease-out-soft hover:bg-warm hover:shadow-raised sm:gap-6 sm:p-4">
+      <div className="relative aspect-square w-24 shrink-0 overflow-hidden rounded-inner bg-cream shadow-soft sm:w-40 lg:w-44">
+        <NewsImage item={item} sizes={sizes} />
+      </div>
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5 sm:gap-2.5">
+        <p className="text-[11px] font-semibold tracking-widest text-coffee uppercase sm:text-small">{newsCategoryLabels[item.category]}</p>
+        <h3 className="line-clamp-3 font-display text-[17px] leading-snug font-semibold text-ink transition-colors duration-300 group-hover:text-coffee sm:text-[22px]">
+          <CardLink item={item} pendingClass="rounded-card" />
+        </h3>
+        <p className="line-clamp-2 text-[15px] leading-relaxed text-ink/65 max-sm:hidden">{item.excerpt}</p>
+        <time dateTime={item.publishedAt} className="text-[12px] tracking-[0.04em] text-ink/50 sm:text-[13px]">
+          {formatDate(item.publishedAt)}
+        </time>
+      </div>
+      <ArrowCircle className="mr-2 bg-warm text-ink shadow-soft group-hover:bg-accent max-sm:hidden" />
     </article>
   );
 }
@@ -127,13 +177,10 @@ export function NewsRow({ item }: { item: NewsItem }) {
       <div className="relative aspect-square w-24 shrink-0 overflow-hidden rounded-inner bg-cream shadow-soft transition-shadow duration-500 ease-out-soft group-hover:shadow-raised">
         <NewsImage item={item} sizes="96px" />
       </div>
-      <div className="flex min-w-0 flex-col gap-1.5 transition-transform duration-500 ease-out-soft group-hover:translate-x-1">
+      <div className="flex min-w-0 flex-col gap-1.5">
         <p className="text-[11px] font-semibold tracking-widest text-coffee uppercase">{newsCategoryLabels[item.category]}</p>
         <h3 className="line-clamp-3 font-display text-[17px] leading-snug font-semibold text-ink transition-colors duration-300 group-hover:text-coffee">
-          {/* Link membentang ke seluruh baris (after:inset-0) */}
-          <Link href={`/news/${item.slug}`} className="after:absolute after:inset-0 after:content-['']">
-            {item.title}
-          </Link>
+          <CardLink item={item} pendingClass="rounded-inner" />
         </h3>
         <time dateTime={item.publishedAt} className="text-[12px] tracking-[0.04em] text-ink/50">
           {formatDate(item.publishedAt)}

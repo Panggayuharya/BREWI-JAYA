@@ -1,5 +1,6 @@
 "use client";
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import Lenis from "lenis";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
@@ -32,6 +33,17 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
       setLenis(null);
     };
   }, [reduced]);
+
+  // Pindah halaman (mis. berita ke berita lain dari sidebar): hentikan sisa scroll halus Lenis dan mulai dari atas,
+  // supaya Lenis tidak "melawan" scroll-ke-atas bawaan Next. Link dengan hash (/#news) dibiarkan.
+  // Hanya saat path berubah, bukan saat halaman pertama dibuka (posisi scroll setelah reload tetap).
+  const pathname = usePathname();
+  const prevPath = useRef(pathname);
+  useEffect(() => {
+    if (prevPath.current === pathname) return;
+    prevPath.current = pathname;
+    if (lenis && !window.location.hash) jumpScroll(lenis, 0);
+  }, [pathname, lenis]);
 
   return <LenisContext.Provider value={lenis}>{children}</LenisContext.Provider>;
 }

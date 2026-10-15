@@ -220,6 +220,12 @@ html.lenis body {
   animation: bob 1.6s ease-in-out infinite;
 }
 
+/* Garis berjalan di LinkPending (kartu berita yang sedang dibuka) */
+@keyframes link-pending {
+  from { left: -33%; }
+  to { left: 100%; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .logo-shine,
   .logo-glow,
