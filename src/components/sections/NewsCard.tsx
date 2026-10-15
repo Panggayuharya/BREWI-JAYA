@@ -4,10 +4,6 @@ import { newsCategoryLabels } from "@/data/news";
 import { formatDate } from "@/lib/format";
 import { MediaImage } from "@/components/ui/MediaImage";
 
-/** Grid kartu berita 1/2/3 kolom ("Berita lainnya" di halaman detail) dan `sizes` foto yang sesuai. */
-export const NEWS_GRID = "grid grid-cols-1 gap-x-8 gap-y-14 md:grid-cols-2 lg:grid-cols-3";
-export const NEWS_GRID_SIZES = "(min-width: 1024px) 380px, (min-width: 768px) 50vw, 100vw";
-
 /** Foto berita: foto suasana penuh (cover), foto cup menu utuh di atas latar cream hangat (contain). */
 export function NewsImage({ item, sizes, priority }: { item: NewsItem; sizes: string; priority?: boolean }) {
   if (item.imageIsCutout) {
@@ -119,6 +115,26 @@ export function NewsCard({
         >
           {item.excerpt}
         </p>
+      </div>
+    </article>
+  );
+}
+
+/** Baris berita ringkas (foto kecil di kiri, kategori & judul di kanan) untuk daftar "Berita lainnya" di halaman detail. */
+export function NewsRow({ item }: { item: NewsItem }) {
+  return (
+    <article className="group relative flex items-center gap-4">
+      <div className="relative aspect-square w-24 shrink-0 overflow-hidden rounded-inner bg-cream shadow-soft transition-shadow duration-500 ease-out-soft group-hover:shadow-raised">
+        <NewsImage item={item} sizes="96px" />
+      </div>
+      <div className="flex min-w-0 flex-col gap-1.5">
+        <NewsMeta item={item} className="flex-wrap gap-x-2 gap-y-0.5 text-[11px] tracking-widest text-ink *:whitespace-nowrap" />
+        <h3 className="line-clamp-3 font-display text-[17px] leading-snug font-semibold text-ink transition-colors duration-300 group-hover:text-coffee">
+          {/* Link membentang ke seluruh baris (after:inset-0) */}
+          <Link href={`/news/${item.slug}`} className="after:absolute after:inset-0 after:content-['']">
+            {item.title}
+          </Link>
+        </h3>
       </div>
     </article>
   );
