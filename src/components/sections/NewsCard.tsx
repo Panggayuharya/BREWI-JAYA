@@ -120,21 +120,24 @@ export function NewsCard({
   );
 }
 
-/** Baris berita ringkas (foto kecil di kiri, kategori & judul di kanan) untuk daftar "Berita lainnya" di halaman detail. */
+/** Baris berita ringkas (foto kecil di kiri; kategori, judul, tanggal di kanan) untuk "Berita lainnya" di halaman detail. */
 export function NewsRow({ item }: { item: NewsItem }) {
   return (
     <article className="group relative flex items-center gap-4">
       <div className="relative aspect-square w-24 shrink-0 overflow-hidden rounded-inner bg-cream shadow-soft transition-shadow duration-500 ease-out-soft group-hover:shadow-raised">
         <NewsImage item={item} sizes="96px" />
       </div>
-      <div className="flex min-w-0 flex-col gap-1.5">
-        <NewsMeta item={item} className="flex-wrap gap-x-2 gap-y-0.5 text-[11px] tracking-widest text-ink *:whitespace-nowrap" />
+      <div className="flex min-w-0 flex-col gap-1.5 transition-transform duration-500 ease-out-soft group-hover:translate-x-1">
+        <p className="text-[11px] font-semibold tracking-widest text-coffee uppercase">{newsCategoryLabels[item.category]}</p>
         <h3 className="line-clamp-3 font-display text-[17px] leading-snug font-semibold text-ink transition-colors duration-300 group-hover:text-coffee">
           {/* Link membentang ke seluruh baris (after:inset-0) */}
           <Link href={`/news/${item.slug}`} className="after:absolute after:inset-0 after:content-['']">
             {item.title}
           </Link>
         </h3>
+        <time dateTime={item.publishedAt} className="text-[12px] tracking-[0.04em] text-ink/50">
+          {formatDate(item.publishedAt)}
+        </time>
       </div>
     </article>
   );
