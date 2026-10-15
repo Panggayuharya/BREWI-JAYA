@@ -3,15 +3,25 @@ import { cache } from "react";
 import { and, asc, desc, eq, ne, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { galleryItems, menuBookPages, menuCategories, menuItems, news, outletStatus } from "@/db/schema";
+import { getGalleryItems as sampleGallery } from "@/data/gallery";
+import { menuBookPages as sampleMenuBook } from "@/data/menu";
+import * as sampleNews from "@/data/news";
 import { getOutlets } from "@/data/outlets";
 import type { GalleryItem, MenuBookPage, MenuCategory, MenuItem, NewsItem, OutletWithStatus } from "@/types";
 
 // Query baca untuk halaman publik. Hasil dipetakan ke tipe di src/types supaya komponen tidak bergantung ke skema DB.
 // `cache` = satu query per request walau dipanggil beberapa komponen.
 
+/**
+ * DATABASE_URL belum di-set (dev lokal sebelum setup Supabase) → galeri, buku menu, dan berita
+ * memakai data contoh di src/data supaya situs tetap jalan.
+ */
+const hasDb = () => Boolean(process.env.DATABASE_URL);
+
 /* ── Galeri ───────────────────────────────────────────────────────────────── */
 
 export const getGalleryItems = cache(async (): Promise<GalleryItem[]> => {
+  if (!hasDb()) return sampleGallery();
   const rows = await db.select().from(galleryItems).orderBy(asc(galleryItems.sortOrder), asc(galleryItems.id));
   return rows.map((g) => ({
     id: g.id,
@@ -61,12 +71,13 @@ export const getMenu = cache(async (): Promise<{ categories: MenuCategory[]; ite
   };
 });
 
-export const getMenuBookPages = cache(async (): Promise<MenuBookPage[]> =>
-  db
+export const getMenuBookPages = cache(async (): Promise<MenuBookPage[]> => {
+  if (!hasDb()) return sampleMenuBook;
+  return db
     .select({ src: menuBookPages.imageUrl, alt: menuBookPages.alt })
     .from(menuBookPages)
-    .orderBy(asc(menuBookPages.sortOrder), asc(menuBookPages.id)),
-);
+    .orderBy(asc(menuBookPages.sortOrder), asc(menuBookPages.id));
+});
 
 /* ── Berita ───────────────────────────────────────────────────────────────── */
 
@@ -86,11 +97,13 @@ const toNewsItem = (n: typeof news.$inferSelect): NewsItem => ({
 const newestFirst = [desc(news.publishedAt), desc(news.id)];
 
 export async function getLatestNews(limit: number) {
+  if (!hasDb()) return sampleNews.getLatestNews(limit);
   const rows = await db.select().from(news).where(eq(news.isActive, true)).orderBy(...newestFirst).limit(limit);
   return rows.map(toNewsItem);
 }
 
 export const getNewsBySlug = cache(async (slug: string) => {
+  if (!hasDb()) return sampleNews.getNewsBySlug(slug);
   const [row] = await db
     .select()
     .from(news)
@@ -101,6 +114,7 @@ export const getNewsBySlug = cache(async (slug: string) => {
 
 /** "Berita lainnya": kategori yang sama lebih dulu, lalu yang terbaru. */
 export async function getRelatedNews(item: NewsItem, limit: number) {
+  if (!hasDb()) return sampleNews.getRelatedNews(item, limit);
   const rows = await db
     .select()
     .from(news)
@@ -111,6 +125,7 @@ export async function getRelatedNews(item: NewsItem, limit: number) {
 }
 
 export async function getNewsSlugs() {
+  if (!hasDb()) return sampleNews.getNews().map(({ slug }) => ({ slug }));
   return db.select({ slug: news.slug }).from(news).where(eq(news.isActive, true));
 }
 

@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { menuBookPages } from "@/data/menu";
 import { getSiteSettings, uiText } from "@/data/site";
 import { HeroHeading, NewsBody, NewsHero } from "@/components/sections/NewsHero";
 import { MenuFlipbook } from "@/components/sections/MenuFlipbook";
 import { buttonClass } from "@/components/ui/Button";
+import { getMenuBookPages } from "@/server/queries";
 
 export const metadata: Metadata = {
   title: `Menu — ${getSiteSettings().brandName}`,
@@ -24,7 +24,9 @@ function BackToHome({ variant }: { variant: "outline-light" | "outline-navy" }) 
 }
 
 /** Halaman "Lihat detail menu": hanya buku menu cetak dalam bentuk flipbook. */
-export default function MenuPage() {
+export default async function MenuPage() {
+  const pages = await getMenuBookPages();
+
   return (
     <>
       <NewsHero nav="menu">
@@ -33,7 +35,7 @@ export default function MenuPage() {
       </NewsHero>
       <NewsBody nav="menu">
         <div className="container-brewi pt-14 pb-28">
-          <MenuFlipbook pages={menuBookPages} />
+          <MenuFlipbook pages={pages} />
           <div className="mt-12 flex justify-center">
             <BackToHome variant="outline-navy" />
           </div>

@@ -10,7 +10,7 @@ import {
   useVelocity,
 } from "motion/react";
 import type { GalleryItem } from "@/types";
-import { getGalleryItems, getGalleryRows } from "@/data/gallery";
+import { isPortrait } from "@/data/gallery";
 import { uiText } from "@/data/site";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { MediaImage } from "@/components/ui/MediaImage";
@@ -25,10 +25,11 @@ const LIGHTBOX_BTN =
 /**
  * Gallery (design.md 9): dua baris marquee berlawanan arah, bisa di-drag/swipe,
  * kecepatan & arah dipengaruhi scroll, klik foto membuka lightbox.
+ * Foto potret masuk baris atas (4:5), foto landscape baris bawah (5:4).
  */
-export function Gallery() {
-  const [top, bottom] = getGalleryRows();
-  const all = getGalleryItems();
+export function Gallery({ items: all }: { items: GalleryItem[] }) {
+  const top = all.filter(isPortrait);
+  const bottom = all.filter((g) => !isPortrait(g));
   const [lightbox, setLightbox] = useState<number | null>(null);
   const open = (item: GalleryItem) => setLightbox(all.findIndex((g) => g.id === item.id));
 

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getNews, getNewsBySlug, getRelatedNews } from "@/data/news";
+import { getNewsBySlug, getNewsSlugs, getRelatedNews } from "@/server/queries";
 import { getSiteSettings, uiText } from "@/data/site";
 import { NewsBody, NewsHero } from "@/components/sections/NewsHero";
 import { NEWS_GRID, NEWS_GRID_SIZES, NewsCard, NewsImage, NewsMeta } from "@/components/sections/NewsCard";
@@ -9,11 +9,11 @@ import { NEWS_GRID, NEWS_GRID_SIZES, NewsCard, NewsImage, NewsMeta } from "@/com
 type Params = { params: Promise<{ slug: string }> };
 
 export function generateStaticParams() {
-  return getNews().map((n) => ({ slug: n.slug }));
+  return getNewsSlugs();
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
-  const item = getNewsBySlug((await params).slug);
+  const item = await getNewsBySlug((await params).slug);
   if (!item) return {};
   return {
     title: `${item.title} — ${getSiteSettings().brandName}`,
@@ -24,9 +24,9 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 }
 
 export default async function NewsDetailPage({ params }: Params) {
-  const item = getNewsBySlug((await params).slug);
+  const item = await getNewsBySlug((await params).slug);
   if (!item) notFound();
-  const related = getRelatedNews(item, 3);
+  const related = await getRelatedNews(item, 3);
 
   return (
     <>

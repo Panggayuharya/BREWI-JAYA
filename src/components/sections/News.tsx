@@ -1,4 +1,4 @@
-import { getLatestNews } from "@/data/news";
+import { getLatestNews } from "@/server/queries";
 import { uiText } from "@/data/site";
 import { Reveal } from "@/components/motion/Reveal";
 import { NewsCard } from "@/components/sections/NewsCard";
@@ -8,8 +8,8 @@ import { NewsCard } from "@/components/sections/NewsCard";
  * detail berita (/news/[slug]).
  * Dibungkus StackPanel (pinPrevious) di page.tsx: Galeri ditahan, News naik menimpanya.
  */
-export function News() {
-  const [featured, ...rest] = getLatestNews(3);
+export async function News() {
+  const [featured, ...rest] = await getLatestNews(3);
   if (!featured) return null;
 
   return (

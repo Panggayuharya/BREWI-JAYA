@@ -8,6 +8,7 @@ import { Gallery } from "@/components/sections/Gallery";
 import { News } from "@/components/sections/News";
 import { Location } from "@/components/sections/Location";
 import { Reservation } from "@/components/sections/Reservation";
+import { getGalleryItems } from "@/server/queries";
 
 /**
  * Urutan section sesuai design.md 1.
@@ -19,7 +20,9 @@ import { Reservation } from "@/components/sections/Reservation";
  * Hanya dua tempat yang memakai "tahan lalu timpa" (pinPrevious): Menu Kopi (Tentang ditahan)
  * dan News (Galeri ditahan) — sengaja tidak berurutan supaya scroll tidak terasa berat.
  */
-export default function Page() {
+export default async function Page() {
+  const gallery = await getGalleryItems();
+
   return (
     <>
       <Navbar />
@@ -34,7 +37,7 @@ export default function Page() {
           <MenuCoffee />
         </StackPanel>
         <StackPanel className="bg-navy-soft" flat>
-          <Gallery />
+          <Gallery items={gallery} />
         </StackPanel>
         <StackPanel className="bg-warm" pinPrevious>
           <News />
